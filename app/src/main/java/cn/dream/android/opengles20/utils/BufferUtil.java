@@ -12,8 +12,8 @@ import java.nio.IntBuffer;
 
 public class BufferUtil {
 
-    public static final FloatBuffer toFloatBuffer(float[] data) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 4);
+    public static FloatBuffer toFloatBuffer(float[] data) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(data.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
         floatBuffer.put(data);
@@ -21,8 +21,8 @@ public class BufferUtil {
         return floatBuffer;
     }
 
-    public static final IntBuffer toIntBuffer(int[] data) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 4);
+    public static IntBuffer toIntBuffer(int[] data) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(data.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         IntBuffer intBuffer = byteBuffer.asIntBuffer();
         intBuffer.put(data);
