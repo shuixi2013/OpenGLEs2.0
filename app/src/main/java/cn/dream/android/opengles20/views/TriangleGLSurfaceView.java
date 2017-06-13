@@ -5,34 +5,34 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import cn.dream.android.opengles20.renderer.MyRenderer;
+import cn.dream.android.opengles20.renderer.TriangleRenderer;
 
 /**
  * Created by lgb on 17-6-13.
  * MyGLSurfaceView
  */
 
-public class MyGLSurfaceView extends GLSurfaceView {
+public class TriangleGLSurfaceView extends GLSurfaceView {
 
-    private final static String TAG = MyGLSurfaceView.class.getSimpleName();
+    private final static String TAG = TriangleGLSurfaceView.class.getSimpleName();
 
-    private MyRenderer myRenderer;
+    private TriangleRenderer renderer;
 
     private float downX, downY;
 
-    public MyGLSurfaceView(Context context) {
+    public TriangleGLSurfaceView(Context context) {
         this(context, null);
     }
 
-    public MyGLSurfaceView(Context context, AttributeSet attrs) {
+    public TriangleGLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init() {
-        myRenderer = new MyRenderer();
+        renderer = new TriangleRenderer();
         setEGLContextClientVersion(2);
-        setRenderer(myRenderer);
+        setRenderer(renderer);
 
         //setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
@@ -46,7 +46,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
             downX = event.getX();
             downY = event.getY();
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            myRenderer.setmAngle((event.getY() - downY) / 20);
+            renderer.setmAngle((event.getY() - downY) / 20);
             requestRender();
             downX = event.getY();
         }

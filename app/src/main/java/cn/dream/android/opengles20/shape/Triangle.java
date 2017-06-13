@@ -2,11 +2,10 @@ package cn.dream.android.opengles20.shape;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import java.nio.FloatBuffer;
 
-import cn.dream.android.opengles20.renderer.MyRenderer;
+import cn.dream.android.opengles20.renderer.TriangleRenderer;
 import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.ShaderUtil;
 
@@ -78,15 +77,15 @@ public class Triangle {
 
     private float[] getMVPMatrix(float[] data) {    // 产生最终变换矩阵的方法
         mMVPMatrix = new float[16];                     // 初始化总变换矩阵
-        Matrix.multiplyMM(mMVPMatrix, 0, MyRenderer.mVMatrix, 0, data, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, MyRenderer.mProMatrix, 0, mMVPMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, TriangleRenderer.mVMatrix, 0, data, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, TriangleRenderer.mProMatrix, 0, mMVPMatrix, 0);
         return mMVPMatrix;
     }
 
     public void drawSelf() {
 
         Matrix.setRotateM(mMMatrix, 0, 0, 0, 1, 0);     // 初始化矩阵
-        Matrix.translateM(mMMatrix, 0, 0, 0, 1);        // z轴平移
+        Matrix.translateM(mMMatrix, 0, 0, 1, 0);        // xz轴平移
         Matrix.rotateM(mMMatrix, 0, mAngle, 1, 0, 0);   // x轴旋转
 
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, getMVPMatrix(mMMatrix), 0);

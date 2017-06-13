@@ -15,9 +15,9 @@ import cn.dream.android.opengles20.shape.Triangle;
  * MyRenderer
  */
 
-public class MyRenderer implements GLSurfaceView.Renderer {
+public class TriangleRenderer implements GLSurfaceView.Renderer {
 
-    private static final String TAG = MyRenderer.class.getSimpleName();
+    private static final String TAG = Triangle.class.getSimpleName();
 
     public static float[] mProMatrix = new float[16];     // 投影矩阵
     public static float[] mVMatrix = new float[16];       // 摄像机位置朝向的参数矩阵
@@ -48,7 +48,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        Log.i(TAG, "onDrawFrame()");
+        //Log.i(TAG, "onDrawFrame()");
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         triangle.drawSelf();
