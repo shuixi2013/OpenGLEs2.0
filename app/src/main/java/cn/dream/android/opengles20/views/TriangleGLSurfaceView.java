@@ -34,10 +34,10 @@ public class TriangleGLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(2);
         setRenderer(renderer);
 
-        //setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         // Render the view only when there is a change in the drawing data
-        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        //setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     @Override
@@ -47,8 +47,10 @@ public class TriangleGLSurfaceView extends GLSurfaceView {
             downY = event.getY();
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             renderer.setmAngle((event.getY() - downY) / 20);
-            requestRender();
+            //requestRender();
             downX = event.getY();
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            renderer.addMode();
         }
         return true;
     }

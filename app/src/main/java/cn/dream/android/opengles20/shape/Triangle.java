@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 
 import cn.dream.android.opengles20.renderer.TriangleRenderer;
 import cn.dream.android.opengles20.utils.BufferUtil;
+import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;
 
 /**
@@ -17,9 +18,6 @@ import cn.dream.android.opengles20.utils.ShaderUtil;
 public class Triangle {
 
     private final static String TAG = Triangle.class.getSimpleName();
-
-    private float[] mMVPMatrix = new float[16];     // 总变换矩阵
-    private float[] mMMatrix = new float[16];       // 具体的变换矩阵，如旋转，平移，缩放
 
     private int mProgram;                           // 自定义渲染管线着色器程序id
 
@@ -67,29 +65,16 @@ public class Triangle {
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
-        GLES20.glUseProgram(mProgram);                  // 制定使用某套shader程序
-
-        // 将顶点位置数据传送进渲染管线
-        GLES20.glVertexAttribPointer(mVertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, mVertexBuffer);
-        // 将顶点颜色数据传送进渲染管线
-        GLES20.glVertexAttribPointer(mColorHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, mColorBuffer);
     }
 
-    private float[] getMVPMatrix(float[] data) {    // 产生最终变换矩阵的方法
-        mMVPMatrix = new float[16];                     // 初始化总变换矩阵
-        Matrix.multiplyMM(mMVPMatrix, 0, TriangleRenderer.mVMatrix, 0, data, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, TriangleRenderer.mProMatrix, 0, mMVPMatrix, 0);
-        return mMVPMatrix;
-    }
 
     public void drawSelf() {
+        GLES20.glUseProgram(mProgram);                      // 制定使用某套shader程序
 
-        Matrix.setRotateM(mMMatrix, 0, 0, 0, 1, 0);     // 初始化矩阵
-        Matrix.translateM(mMMatrix, 0, 0, 1, 0);        // xz轴平移
-        Matrix.rotateM(mMMatrix, 0, mAngle, 1, 0, 0);   // x轴旋转
+        GLES20.glVertexAttribPointer(mVertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, mVertexBuffer);   // 将顶点位置数据传送进渲染管线
+        GLES20.glVertexAttribPointer(mColorHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, mColorBuffer);     // 将顶点颜色数据传送进渲染管线
 
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, getMVPMatrix(mMMatrix), 0);
-
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
 
         GLES20.glEnableVertexAttribArray(mVertexHandle);    // 启用顶点位置数据
         GLES20.glEnableVertexAttribArray(mColorHandle);     // 启用顶点着色数据
@@ -99,5 +84,9 @@ public class Triangle {
 
     public void setmAngle(float mAngle) {
         this.mAngle += mAngle;
+    }
+
+    public float getmAngle() {
+        return mAngle;
     }
 }

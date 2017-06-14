@@ -17,7 +17,7 @@ public class ShaderUtil {
     public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" + // 总变换矩阵
             "attribute vec3 aPosition;\n" +                                 // 顶点位置
             "attribute vec4 aColor;\n" +                                    // 顶点颜色
-            "varying  vec4 vColor;\n" +                                         // 用于传递给片元着色器的易变变量
+            "varying  vec4 vColor;\n" +                                     // 用于传递给片元着色器的易变变量
             "void main() {\n" +
             "   gl_Position = uMVPMatrix * vec4(aPosition,1);\n" +          // 根据总变换矩阵计算此次绘制顶点的位置
             "   vColor = aColor;\n" +                                       // 将接收的顶点颜色传递给片元着色器
@@ -74,6 +74,7 @@ public class ShaderUtil {
                 program = 0;
             }
         }
+        Log.e("ES20", "program=" + program);
         return program;
     }
 
