@@ -21,6 +21,8 @@
 
         <activity android:name=".activity.TriangleActivity_" />
 
+        <activity android:name=".activity.PlaneActivity_" />
+
     </application>
 
 </manifest>
