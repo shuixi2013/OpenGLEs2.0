@@ -23,6 +23,8 @@
 
         <activity android:name=".activity.PlaneActivity_" />
 
+        <activity android:name=".activity.PolyhetronActivity_" />
+
     </application>
 
 </manifest>

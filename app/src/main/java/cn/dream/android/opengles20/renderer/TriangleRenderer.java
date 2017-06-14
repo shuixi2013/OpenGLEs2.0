@@ -35,7 +35,10 @@ public class TriangleRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0, 0, 0, 1);        // 设置屏幕背景色
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);  // 开启深度检测
-        //GLES20.glEnable(GLES20.GL_CULL_FACE);   // 打开背面裁剪
+        //GLES20.glEnable(GLES20.GL_CULL_FACE);   // 打开背面裁剪，不需要展示背面的可以用该选项以提高渲染效率
+        //GLES20.glDisable(GLES20.GL_CULL_FACE);  // 关闭背面裁剪
+        //GLES20.glFrontFace(GLES20.GL_CCW);      // 逆时针卷绕为正面，默认该选项
+        //GLES20.glFrontFace(GLES20.GL_CW);       // 与GL_CCW反之
     }
 
     @Override
@@ -45,6 +48,7 @@ public class TriangleRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);     //　设置视窗大小及位置
 
         // 场景体中的物体会投影到近平面上，然后再映射到显示屏幕上
+        // 摄像机的左右视角由left、right及near决定，同理上下视角由另三个参数决定
         float ratio = (float) width / height;       // 计算GLSurfaceView的宽高比
         MatrixState.setProjectFrustum(-ratio, ratio, -1, 1, 1, 10);       // 设置透视投影
         //MatrixState.setProjectOrtho(-ratio, ratio, -1, 1, 1, 10);         // 设置正交投影
