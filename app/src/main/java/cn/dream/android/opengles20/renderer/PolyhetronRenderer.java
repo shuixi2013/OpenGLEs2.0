@@ -20,7 +20,8 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
     private final static String TAG = PolyhetronRenderer.class.getSimpleName();
 
     private Polyhetron polyhetron;
-    private float angle;
+    private float angleX;
+    private float angleY;
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -30,7 +31,7 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0, 0 ,0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        //GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
     }
 
     @Override
@@ -42,6 +43,7 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
         float radio = (float) width / height;
         MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 10);
         MatrixState.setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);
+        MatrixState.setLightPosition(0, 0, 8);
         MatrixState.setInitStack();
     }
 
@@ -50,8 +52,14 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         MatrixState.pushMatrix();
-        MatrixState.rotate(angle++, 0.5f, 1, 1);
+        MatrixState.rotate(angleX, 1, 0, 0);
+        MatrixState.rotate(angleY, 0, 1, 0);
         polyhetron.drawSelf();
         MatrixState.popMatrix();
+    }
+
+    public void addAngle(float angleX, float angleY) {
+        this.angleX += angleX;
+        this.angleY += angleY;
     }
 }

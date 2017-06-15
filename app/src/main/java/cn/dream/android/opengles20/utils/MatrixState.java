@@ -3,6 +3,7 @@ package cn.dream.android.opengles20.utils;
 import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 /**
  * @author lgb 2017-6-14
@@ -13,6 +14,9 @@ public class MatrixState {
     private static float[] mProMatrix = new float[16];  // 4x4矩阵 投影用
     private static float[] mVMatrix = new float[16];    // 摄像机位置朝向9参数矩阵
     private static float[] currMatrix;                  // 当前变换矩阵
+
+    private static float[] lightPosition = new float[]{0, 0, 0};    // 光源位置
+    public static FloatBuffer lightBuffer;
 
     static float[] mMVPMatrix = new float[16];          // 获取具体物体的总变换矩阵
     static float[][] mStack = new float[10][16];        // 保护变换矩阵的栈
@@ -38,6 +42,16 @@ public class MatrixState {
             currMatrix[i] = mStack[stackTop][i];
         }
         stackTop--;
+    }
+
+    public static void setLightPosition(float x, float y, float z) {
+        lightPosition[0] = x;
+        lightPosition[1] = y;
+        lightPosition[2] = z;
+
+        if (lightBuffer != null)
+            lightBuffer.clear();
+        lightBuffer = BufferUtil.toFloatBuffer(lightPosition);
     }
 
     /**
