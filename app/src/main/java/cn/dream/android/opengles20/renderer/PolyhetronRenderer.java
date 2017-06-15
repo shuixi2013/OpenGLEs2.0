@@ -1,5 +1,6 @@
 package cn.dream.android.opengles20.renderer;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
@@ -19,15 +20,21 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
 
     private final static String TAG = PolyhetronRenderer.class.getSimpleName();
 
+    private Context context;
+
     private Polyhetron polyhetron;
     private float angleX;
     private float angleY;
+
+    public PolyhetronRenderer(Context context){
+        this.context = context;
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceChanged()");
 
-        polyhetron = new Polyhetron();
+        polyhetron = new Polyhetron(context);
 
         GLES20.glClearColor(0, 0 ,0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);

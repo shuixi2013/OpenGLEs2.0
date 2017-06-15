@@ -38,7 +38,7 @@ public class PolyhetronActivity extends Activity {
 
     @AfterViews
     void afterViews() {
-        polyhetronRenderer = new PolyhetronRenderer();
+        polyhetronRenderer = new PolyhetronRenderer(this);
         glSurfaceView.setRenderer(polyhetronRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {

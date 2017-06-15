@@ -24,6 +24,7 @@ public class MatrixState {
 
     static ByteBuffer llbb = ByteBuffer.allocateDirect(3 * 4);  // 设置摄像机
     static float[] cameraLocation = new float[3];               // 摄像机位置
+    static FloatBuffer cameraBuffer;
 
     public static void setInitStack() {                 // 获取不变换初始矩阵
         currMatrix = new float[16];
@@ -99,6 +100,12 @@ public class MatrixState {
     public static void setCamera(float cx, float cy, float cz, float tx,  float ty, float tz,
                     float upx, float upy, float upz) {
         Matrix.setLookAtM(mVMatrix, 0, cx, cy, cz, tx, ty, tz, upx, upy, upz);
+        cameraLocation[0] = cx;
+        cameraLocation[1] = cy;
+        cameraLocation[2] = cz;
+        if (cameraBuffer != null)
+            cameraBuffer.clear();
+        cameraBuffer = BufferUtil.toFloatBuffer(cameraLocation);
     }
 
     /**

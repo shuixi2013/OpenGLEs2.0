@@ -1,5 +1,6 @@
 package cn.dream.android.opengles20.shape;
 
+import android.content.Context;
 import android.opengl.GLES20;
 
 import java.nio.FloatBuffer;
@@ -85,6 +86,7 @@ public class Polyhetron {
     private int colorHandle;
     private int ambientHandle;
     private int lightPositionHandle;
+    private int cameraHandle;
     private int normalHandle;
     private int mMatrixHandle;
     private int uMVPMatrixHandle;
@@ -92,14 +94,16 @@ public class Polyhetron {
     public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" + // 总变换矩阵
             "uniform mat4 uMMatrix;\n" +                                    // 变换矩阵，如平移，缩放，旋转
             "uniform vec3 uLightPosition;\n" +                              // 光源位置
+            "uniform vec3 uCamera;\n" +                                     // 相机位置
             "attribute vec3 aPosition;\n" +                                 // 顶点位置
             "attribute vec4 aColor;\n" +                                    // 顶点颜色
             "attribute vec3 aNormal;\n" +                                   // 顶点法向量
-            "varying vec3 vPosition;\n" +                                    // 用于传递给片元着色器的易变变亮
+            "varying vec3 vPosition;\n" +                                   // 用于传递给片元着色器的易变变亮
             "varying vec4 vColor;\n" +                                      // 用于传递给片元着色器的易变变量
-            "varying vec4 vDiffuse;\n" +                                       // 散射光易变变量
+            "varying vec4 vDiffuse;\n" +                                    // 散射光易变变量
+            "varying vec4 vSpecular;\n" +                                   // 镜面反射易变变量
             "void lightDiffuse(in vec3 normal, inout vec4 diffuse, " +      // 输入法向量，输出计算后的散射光
-            "   in vec3 lightPosition, in vec4 lightDiffuse) {\n"+         // 输入光源位置，输入漫射光强度
+            "   in vec3 lightPosition, in vec4 lightDiffuse) {\n"+          // 输入光源位置，输入漫射光强度
             "   vec3 tempNormal = aPosition + normal;\n" +                  // 计算变换后的法向量
             "   vec3 newNormal = (uMMatrix * vec4(tempNormal, 1)).xyz - (uMMatrix * vec4(aPosition, 1)).xyz;\n" +
             "   newNormal = normalize(newNormal);\n" +                      // 对法向量规格化
@@ -124,12 +128,13 @@ public class Polyhetron {
             "   gl_FragColor = vColor * uAmbient * vDiffuse;\n" +          // 给片源附上颜色值
             "}";
 
-    public Polyhetron() {
+    public Polyhetron(Context context) {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         colorBuffer = BufferUtil.toFloatBuffer(color);
         normalBuffer = BufferUtil.toFloatBuffer(normal);
 
-        mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
+        mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/diffuse_vertex.sh", context.getResources()),
+                ShaderUtil.loadFromAssetsFile("opengles/code/diffuse_fragment.sh", context.getResources()));
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         colorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
@@ -137,6 +142,7 @@ public class Polyhetron {
 
         ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
+        cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
         mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
     }
