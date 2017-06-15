@@ -73,7 +73,7 @@ public class Polyhetron {
     };
 
     private float[] ambient = new float[] {     // 环境光
-            0.15f, 0.15f, 0.15f, 1
+            0.35f, 0.35f, 0.35f, 1
     };
 
     private float[] diffuse = new float[] {     // 漫射光
@@ -81,7 +81,7 @@ public class Polyhetron {
     };
 
     private float[] specular = new float[] {     // 反射光
-            0.7f, 0.7f, 0.7f, 1
+            0.9f, 0.9f, 0.9f, 1
     };
 
     private FloatBuffer vertexBuffer;
@@ -119,9 +119,9 @@ public class Polyhetron {
         colorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         normalHandle = GLES20.glGetAttribLocation(mProgram, "aNormal");
 
-        ambientHandle = GLES20.glGetAttribLocation(mProgram, "aAmbient");
-        diffuseHandle = GLES20.glGetAttribLocation(mProgram, "aDiffuse");
-        specularHandle = GLES20.glGetAttribLocation(mProgram, "aSpecular");
+        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
+        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
+        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
 
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
@@ -137,17 +137,17 @@ public class Polyhetron {
         GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
         GLES20.glUniform4fv(cameraHandle, 1, MatrixState.cameraBuffer);
 
-        GLES20.glVertexAttribPointer(ambientHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, ambientBuffer);
-        GLES20.glVertexAttribPointer(diffuseHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, diffuseBuffer);
-        GLES20.glVertexAttribPointer(specularHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, specularBuffer);
+        GLES20.glUniform4fv(ambientHandle, 1, ambientBuffer);
+        GLES20.glUniform4fv(diffuseHandle, 1, diffuseBuffer);
+        GLES20.glUniform4fv(specularHandle, 1, specularBuffer);
 
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, colorBuffer);
         GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, normalBuffer);
 
-        GLES20.glEnableVertexAttribArray(ambientHandle);
-        GLES20.glEnableVertexAttribArray(diffuseHandle);
-        GLES20.glEnableVertexAttribArray(specularHandle);
+//        GLES20.glEnableVertexAttribArray(ambientHandle);
+//        GLES20.glEnableVertexAttribArray(diffuseHandle);
+//        GLES20.glEnableVertexAttribArray(specularHandle);
 
         GLES20.glEnableVertexAttribArray(vertexHandle);
         GLES20.glEnableVertexAttribArray(colorHandle);

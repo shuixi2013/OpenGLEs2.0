@@ -3,12 +3,13 @@ uniform mat4 uMMatrix;         // 变换矩阵，如平移，缩放，旋转
 uniform vec3 uCamera;          // 相机位置
 uniform vec3 uLightPosition;   // 光源位置
 
+uniform vec4 uAmbient;         // 环境光强度
+uniform vec4 uDiffuse;         // 漫射光强度
+uniform vec4 uSpecular;        // 反射光强度
+
 attribute vec3 aPosition;      // 顶点位置
 attribute vec3 aNormal;        // 顶点法向量
 attribute vec4 aColor;         // 顶点颜色
-attribute vec4 aAmbient;       // 环境光强度
-attribute vec4 aDiffuse;       // 漫射光强度
-attribute vec4 aSpecular;      // 反射光强度
 
 varying vec3 vPosition;        // 用于传递给片元着色器的易变变亮
 varying vec4 vColor;           // 顶点颜色易变变量
@@ -47,7 +48,7 @@ void main() {
 
     // 计算定位光各通道强度   test aAmbient, aDiffuse, aSpecular: vec4(0.15,0.15,0.15,1.0), vec4(0.8,0.8,0.8,1.0), vec4(0.7,0.7,0.7,1.0)
     pointLight(normalize(aNormal), ambientTemp, diffuseTemp, specularTemp,
-        uLightPosition, vec4(0.15,0.15,0.15,1.0), vec4(0.8,0.8,0.8,1.0), vec4(0.7,0.7,0.7,1.0));
+        uLightPosition, uAmbient, uDiffuse, uSpecular);
 
     vAmbient = ambientTemp;
     vDiffuse = diffuseTemp;
