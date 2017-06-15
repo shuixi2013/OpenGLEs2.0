@@ -73,74 +73,56 @@ public class Polyhetron {
     };
 
     private float[] ambient = new float[] {     // 环境光
-            0.6f, 0.6f, 0.6f, 1
+            0.15f, 0.15f, 0.15f, 1
     };
 
+    private float[] diffuse = new float[] {     // 漫射光
+            0.8f, 0.8f, 0.8f, 1
+    };
+
+    private float[] specular = new float[] {     // 反射光
+            0.7f, 0.7f, 0.7f, 1
+    };
 
     private FloatBuffer vertexBuffer;
     private FloatBuffer colorBuffer;
     private FloatBuffer normalBuffer;
+    private FloatBuffer ambientBuffer;
+    private FloatBuffer diffuseBuffer;
+    private FloatBuffer specularBuffer;
 
     private int mProgram;
     private int vertexHandle;
     private int colorHandle;
     private int ambientHandle;
+    private int diffuseHandle;
+    private int specularHandle;
     private int lightPositionHandle;
     private int cameraHandle;
     private int normalHandle;
     private int mMatrixHandle;
     private int uMVPMatrixHandle;
 
-    public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" + // 总变换矩阵
-            "uniform mat4 uMMatrix;\n" +                                    // 变换矩阵，如平移，缩放，旋转
-            "uniform vec3 uLightPosition;\n" +                              // 光源位置
-            "uniform vec3 uCamera;\n" +                                     // 相机位置
-            "attribute vec3 aPosition;\n" +                                 // 顶点位置
-            "attribute vec4 aColor;\n" +                                    // 顶点颜色
-            "attribute vec3 aNormal;\n" +                                   // 顶点法向量
-            "varying vec3 vPosition;\n" +                                   // 用于传递给片元着色器的易变变亮
-            "varying vec4 vColor;\n" +                                      // 用于传递给片元着色器的易变变量
-            "varying vec4 vDiffuse;\n" +                                    // 散射光易变变量
-            "varying vec4 vSpecular;\n" +                                   // 镜面反射易变变量
-            "void lightDiffuse(in vec3 normal, inout vec4 diffuse, " +      // 输入法向量，输出计算后的散射光
-            "   in vec3 lightPosition, in vec4 lightDiffuse) {\n"+          // 输入光源位置，输入漫射光强度
-            "   vec3 tempNormal = aPosition + normal;\n" +                  // 计算变换后的法向量
-            "   vec3 newNormal = (uMMatrix * vec4(tempNormal, 1)).xyz - (uMMatrix * vec4(aPosition, 1)).xyz;\n" +
-            "   newNormal = normalize(newNormal);\n" +                      // 对法向量规格化
-            "   vec3 vp = normalize(lightPosition - (uMMatrix * vec4(aPosition, 1)).xyz);\n" +    // 计算表面点到光源位置的向量vp
-            "   float mDotViewPosition = max(0.0, dot(newNormal, vp));\n" + // 求法向量和vp向量的点积　与0的最大值
-            "   diffuse = lightDiffuse * mDotViewPosition;\n" +             // 计算散射光的最终结果
-            "}\n" +
-            "void main() {\n" +
-            "   gl_Position = uMVPMatrix * vec4(aPosition,1);\n" +          // 根据总变换矩阵计算此次绘制顶点的位置
-            "   vPosition = aPosition;\n" +                                 // 将接收的顶点位置传递给片元着色器
-            "   vColor = aColor;\n" +                                       // 将接收的顶点颜色传递给片元着色器
-            "   vec4 targetDiffuse = vec4(0, 0, 0, 0);\n" +
-            "   lightDiffuse(normalize(aNormal), targetDiffuse, uLightPosition, vec4(1, 1, 1, 1));\n" +
-            "   vDiffuse = targetDiffuse;\n" +
-            "}";
-
-    public final static String FRAGMENT_CODE = "precision mediump float;\n" +
-            "varying vec4 vColor;\n" +                                     // 接收从顶点着色器传过来的易变变量
-            "varying vec4 vDiffuse;\n" +
-            "uniform vec4 uAmbient;\n" +
-            "void main() {\n" +
-            "   gl_FragColor = vColor * uAmbient * vDiffuse;\n" +          // 给片源附上颜色值
-            "}";
 
     public Polyhetron(Context context) {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         colorBuffer = BufferUtil.toFloatBuffer(color);
         normalBuffer = BufferUtil.toFloatBuffer(normal);
+        ambientBuffer = BufferUtil.toFloatBuffer(ambient);
+        diffuseBuffer = BufferUtil.toFloatBuffer(diffuse);
+        specularBuffer = BufferUtil.toFloatBuffer(specular);
 
-        mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/diffuse_vertex.sh", context.getResources()),
-                ShaderUtil.loadFromAssetsFile("opengles/code/diffuse_fragment.sh", context.getResources()));
+        mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/vertex.sh", context.getResources()),
+                ShaderUtil.loadFromAssetsFile("opengles/code/fragment.sh", context.getResources()));
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         colorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         normalHandle = GLES20.glGetAttribLocation(mProgram, "aNormal");
 
-        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
+        ambientHandle = GLES20.glGetAttribLocation(mProgram, "aAmbient");
+        diffuseHandle = GLES20.glGetAttribLocation(mProgram, "aDiffuse");
+        specularHandle = GLES20.glGetAttribLocation(mProgram, "aSpecular");
+
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
         mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
@@ -151,16 +133,26 @@ public class Polyhetron {
         GLES20.glUseProgram(mProgram);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, MatrixState.getMMatrix(), 0);
-        GLES20.glUniform4fv(ambientHandle, 1, ambient, 0);
+
         GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
+        GLES20.glUniform4fv(cameraHandle, 1, MatrixState.cameraBuffer);
+
+        GLES20.glVertexAttribPointer(ambientHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, ambientBuffer);
+        GLES20.glVertexAttribPointer(diffuseHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, diffuseBuffer);
+        GLES20.glVertexAttribPointer(specularHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, specularBuffer);
 
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, colorBuffer);
         GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, normalBuffer);
 
+        GLES20.glEnableVertexAttribArray(ambientHandle);
+        GLES20.glEnableVertexAttribArray(diffuseHandle);
+        GLES20.glEnableVertexAttribArray(specularHandle);
+
         GLES20.glEnableVertexAttribArray(vertexHandle);
         GLES20.glEnableVertexAttribArray(colorHandle);
         GLES20.glEnableVertexAttribArray(normalHandle);
+
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12);
     }
