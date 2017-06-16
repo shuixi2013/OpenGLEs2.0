@@ -5,10 +5,16 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
+import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.renderer.PlaneRenderer;
 import cn.dream.android.opengles20.renderer.PolyhetronRenderer;
 
@@ -17,28 +23,32 @@ import cn.dream.android.opengles20.renderer.PolyhetronRenderer;
  * PolyhetronActivity
  */
 
-@EActivity
+@EActivity(R.layout.activity_polyhetron)
 public class PolyhetronActivity extends Activity {
 
     private static final String TAG = PolyhetronActivity.class.getSimpleName();
 
-    private GLSurfaceView glSurfaceView;
+    @ViewById(R.id.gLSurfaceView)
+    GLSurfaceView glSurfaceView;
+
+    @ViewById(R.id.seekBar)
+    SeekBar seekBar;
+
     private PolyhetronRenderer polyhetronRenderer;
     private float mPreviousY;               //上次的触控位置Y坐标
     private float mPreviousX;               //上次的触控位置X坐标
+
+    private boolean isPointLight = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        glSurfaceView = new GLSurfaceView(this);
-        glSurfaceView.setEGLContextClientVersion(2);
-
-        setContentView(glSurfaceView);
     }
 
     @AfterViews
     void afterViews() {
         polyhetronRenderer = new PolyhetronRenderer(this);
+        glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(polyhetronRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
@@ -57,5 +67,32 @@ public class PolyhetronActivity extends Activity {
                 return true;
             }
         });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                polyhetronRenderer.setLightPosition(seekBar.getProgress() - seekBar.getMax() / 2, 0, 8);
+            }
+        });
+    }
+
+    @Click(R.id.lightStyle)
+    void onClickLightStyle(View view) {
+        if (isPointLight) {
+            ((Button) view).setText("Sun Light");
+        } else {
+            ((Button) view).setText("Point Light");
+        }
+        isPointLight = !isPointLight;
     }
 }

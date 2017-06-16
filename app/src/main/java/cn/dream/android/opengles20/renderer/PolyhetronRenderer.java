@@ -69,4 +69,8 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
         this.angleX += angleX;
         this.angleY += angleY;
     }
+
+    public void setLightPosition(float x, float y, float z) {
+        MatrixState.setLightPosition(x, y, z);
+    }
 }
