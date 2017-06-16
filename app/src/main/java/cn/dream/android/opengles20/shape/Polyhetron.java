@@ -119,9 +119,9 @@ public class Polyhetron {
         colorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         normalHandle = GLES20.glGetAttribLocation(mProgram, "aNormal");
 
-//        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
-//        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
-//        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
+        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
+        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
+        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
 
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
