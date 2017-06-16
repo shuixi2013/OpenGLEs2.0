@@ -119,9 +119,9 @@ public class Polyhetron {
         colorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         normalHandle = GLES20.glGetAttribLocation(mProgram, "aNormal");
 
-        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
-        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
-        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
+//        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
+//        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
+//        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
 
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
@@ -135,7 +135,7 @@ public class Polyhetron {
         GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, MatrixState.getMMatrix(), 0);
 
         GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
-        GLES20.glUniform4fv(cameraHandle, 1, MatrixState.cameraBuffer);
+        GLES20.glUniform3fv(cameraHandle, 1, MatrixState.cameraBuffer);
 
         GLES20.glUniform4fv(ambientHandle, 1, ambientBuffer);
         GLES20.glUniform4fv(diffuseHandle, 1, diffuseBuffer);
@@ -145,9 +145,9 @@ public class Polyhetron {
         GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 4 * 4, colorBuffer);
         GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, normalBuffer);
 
-//        GLES20.glEnableVertexAttribArray(ambientHandle);
-//        GLES20.glEnableVertexAttribArray(diffuseHandle);
-//        GLES20.glEnableVertexAttribArray(specularHandle);
+        GLES20.glEnableVertexAttribArray(ambientHandle);
+        GLES20.glEnableVertexAttribArray(diffuseHandle);
+        GLES20.glEnableVertexAttribArray(specularHandle);
 
         GLES20.glEnableVertexAttribArray(vertexHandle);
         GLES20.glEnableVertexAttribArray(colorHandle);

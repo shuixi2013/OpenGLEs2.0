@@ -41,9 +41,6 @@ void pointLight(in vec3 normal, inout vec4 outAmbient, inout vec4 outDiffuse, in
 void main() {
     gl_Position = uMVPMatrix * vec4(aPosition, 1);          // 根据总变换矩阵计算此次绘制顶点的位置
 
-    vPosition = aPosition;                                  // 将接收的顶点位置传递给片元着色器
-    vColor = aColor;                                        // 将接收的顶点颜色传递给片元着色器
-
     vec4 ambientTemp, diffuseTemp, specularTemp;
 
     // 计算定位光各通道强度   test aAmbient, aDiffuse, aSpecular: vec4(0.15,0.15,0.15,1.0), vec4(0.8,0.8,0.8,1.0), vec4(0.7,0.7,0.7,1.0)
@@ -53,4 +50,7 @@ void main() {
     vAmbient = ambientTemp;
     vDiffuse = diffuseTemp;
     vSpecular = specularTemp;
+
+    vPosition = aPosition;                                  // 将接收的顶点位置传递给片元着色器
+    vColor = aColor;                                        // 将接收的顶点颜色传递给片元着色器
 }
