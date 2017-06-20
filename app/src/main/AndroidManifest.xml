@@ -25,6 +25,8 @@
 
         <activity android:name=".activity.PolyhetronActivity_" />
 
+        <activity android:name=".activity.TextureActivity_" />
+
     </application>
 
 </manifest>

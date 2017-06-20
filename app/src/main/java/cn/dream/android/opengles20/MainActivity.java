@@ -9,6 +9,7 @@ import org.androidannotations.annotations.EActivity;
 
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
+import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
 
 @EActivity(R.layout.activity_main)
@@ -29,5 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onPolyhetron(View view) {
         startActivity(new Intent(this, PolyhetronActivity_.class));
+    }
+
+    public void onTexture(View view) {
+        startActivity(new Intent(this, TextureActivity_.class));
     }
 }

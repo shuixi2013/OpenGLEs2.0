@@ -17,10 +17,13 @@ public class ShaderUtil {
     public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" + // 总变换矩阵
             "attribute vec3 aPosition;\n" +                                 // 顶点位置
             "attribute vec4 aColor;\n" +                                    // 顶点颜色
+            "attribute vec2 aTexture;\n" +                                  // 顶点纹理
             "varying  vec4 vColor;\n" +                                     // 用于传递给片元着色器的易变变量
+            "varying  vec2 vTexture;\n" +
             "void main() {\n" +
             "   gl_Position = uMVPMatrix * vec4(aPosition,1);\n" +          // 根据总变换矩阵计算此次绘制顶点的位置
             "   vColor = aColor;\n" +                                       // 将接收的顶点颜色传递给片元着色器
+            "   vTexture = aTexture;\n" +
             "}";
 
     public final static String FRAGMENT_CODE = "precision mediump float;\n" +
@@ -29,6 +32,13 @@ public class ShaderUtil {
             "   gl_FragColor = vColor;\n" +                                 // 给片源附上颜色值
             "}";
 
+    public final static String FRAGMENT2_CODE = "precision mediump float;\n" +
+            "uniform  sampler2D sTexture;\n" +                              // 纹理采样器，代表一幅纹理
+            "varying  vec4 vColor;\n" +                                     // 接收从顶点着色器传过来的易变变量
+            "varying  vec2 vTexture;\n" +
+            "void main() {\n" +
+            "   gl_FragColor = texture2D(sTexture, vTexture);\n" +          // 进行纹理采样
+            "}";
 
     public static int loadShader(int shaderType, String source) {
         int shader = GLES20.glCreateShader(shaderType);
