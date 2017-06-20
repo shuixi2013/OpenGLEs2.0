@@ -51,6 +51,7 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
         MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 10);
         MatrixState.setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);
         MatrixState.setLightPosition(0, 0, 8);
+        MatrixState.setSunLightPosition(0, 0, 8);
         MatrixState.setInitStack();
     }
 
@@ -72,5 +73,14 @@ public class PolyhetronRenderer implements GLSurfaceView.Renderer {
 
     public void setLightPosition(float x, float y, float z) {
         MatrixState.setLightPosition(x, y, z);
+        MatrixState.setSunLightPosition(x, y, z);
+    }
+
+    public void setLightStyle(boolean isPointLight) {
+        polyhetron.setPointLight(isPointLight);
+    }
+
+    public boolean getLightStyle() {
+        return polyhetron.isPointLight();
     }
 }

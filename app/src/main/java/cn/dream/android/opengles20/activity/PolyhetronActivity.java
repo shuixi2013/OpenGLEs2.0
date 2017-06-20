@@ -38,7 +38,6 @@ public class PolyhetronActivity extends Activity {
     private float mPreviousY;               //上次的触控位置Y坐标
     private float mPreviousX;               //上次的触控位置X坐标
 
-    private boolean isPointLight = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +87,11 @@ public class PolyhetronActivity extends Activity {
 
     @Click(R.id.lightStyle)
     void onClickLightStyle(View view) {
-        if (isPointLight) {
+        if (polyhetronRenderer.getLightStyle()) {
             ((Button) view).setText("Sun Light");
         } else {
             ((Button) view).setText("Point Light");
         }
-        isPointLight = !isPointLight;
+        polyhetronRenderer.setLightStyle(!polyhetronRenderer.getLightStyle());
     }
 }

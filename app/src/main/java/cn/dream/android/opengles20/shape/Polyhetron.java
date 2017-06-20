@@ -18,7 +18,7 @@ public class Polyhetron {
 
     private final static String TAG = Polyhetron.class.getSimpleName();
 
-    private float[] vertex = new float[] {      // 顶点坐标
+    private float[] vertex = new float[]{      // 顶点坐标
             -0.5f, -0.5f, 0.5f,
             0.5f, -0.5f, 0.5f,
             0, 0.8f, 0,
@@ -36,25 +36,25 @@ public class Polyhetron {
             -0.5f, -0.5f, 0.5f
     };
 
-    private float[] normal = new float[] {      // 对应平面每个顶点的法向量
-            0, 1, 13f/5f,
-            0, 1, 13f/5f,
-            0, 1, 13f/5f,
+    private float[] normal = new float[]{      // 对应平面每个顶点的法向量
+            0, 1, 13f / 5f,
+            0, 1, 13f / 5f,
+            0, 1, 13f / 5f,
 
-            18f/5f, 1, -1,
-            18f/5f, 1, -1,
-            18f/5f, 1, -1,
+            18f / 5f, 1, -1,
+            18f / 5f, 1, -1,
+            18f / 5f, 1, -1,
 
-            -2, 5f/13f, -1,
-            -2, 5f/13f, -1,
-            -2, 5f/13f, -1,
+            -2, 5f / 13f, -1,
+            -2, 5f / 13f, -1,
+            -2, 5f / 13f, -1,
 
             0, -1, 0,
             0, -1, 0,
             0, -1, 0
     };
 
-    private float[] color = new float[] {       // 顶点颜色
+    private float[] color = new float[]{       // 顶点颜色
             0.9f, 0.1f, 0.1f, 0,
             0.1f, 0.9f, 0.1f, 0,
             0.1f, 0.1f, 0.9f, 0,
@@ -72,15 +72,15 @@ public class Polyhetron {
             0.9f, 0.1f, 0.1f, 0
     };
 
-    private float[] ambient = new float[] {     // 环境光
+    private float[] ambient = new float[]{     // 环境光
             0.35f, 0.35f, 0.35f, 1
     };
 
-    private float[] diffuse = new float[] {     // 漫射光
+    private float[] diffuse = new float[]{     // 漫射光
             0.8f, 0.8f, 0.8f, 1
     };
 
-    private float[] specular = new float[] {     // 反射光
+    private float[] specular = new float[]{     // 反射光
             0.9f, 0.9f, 0.9f, 1
     };
 
@@ -97,14 +97,28 @@ public class Polyhetron {
     private int ambientHandle;
     private int diffuseHandle;
     private int specularHandle;
-    private int lightPositionHandle;
+    private int lightPositionHandle;        // 点光源位置
+    private int lightStyleHandle;           // 平行光源位置引用
     private int cameraHandle;
     private int normalHandle;
     private int mMatrixHandle;
     private int uMVPMatrixHandle;
 
+    private Context context;
+    private boolean isPointLight = true;    // 默认是点光源
 
     public Polyhetron(Context context) {
+        this.context = context;
+        init();
+    }
+
+    public Polyhetron(Context context, boolean isPointLight) {
+        this.context = context;
+        this.isPointLight = isPointLight;
+        init();
+    }
+
+    private void init() {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         colorBuffer = BufferUtil.toFloatBuffer(color);
         normalBuffer = BufferUtil.toFloatBuffer(normal);
@@ -124,9 +138,13 @@ public class Polyhetron {
         specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
 
         lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
+        lightStyleHandle = GLES20.glGetUniformLocation(mProgram, "uIsDirect");
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
         mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+
+        GLES20.glUseProgram(mProgram);
+        setPointLight(this.isPointLight);
     }
 
     public void drawSelf() {
@@ -134,7 +152,10 @@ public class Polyhetron {
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, MatrixState.getMMatrix(), 0);
 
-        GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
+        if (isPointLight)
+            GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
+        else GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.directLightBuffer);
+
         GLES20.glUniform3fv(cameraHandle, 1, MatrixState.cameraBuffer);
 
         GLES20.glUniform4fv(ambientHandle, 1, ambientBuffer);
@@ -155,5 +176,14 @@ public class Polyhetron {
 
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12);
+    }
+
+    public void setPointLight(boolean isPointLight) {
+        this.isPointLight = isPointLight;
+        GLES20.glUniform1i(lightStyleHandle, isPointLight ? 1 : 0);
+    }
+
+    public boolean isPointLight() {
+        return isPointLight;
     }
 }

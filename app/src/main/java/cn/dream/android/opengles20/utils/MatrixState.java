@@ -15,8 +15,11 @@ public class MatrixState {
     private static float[] mVMatrix = new float[16];    // 摄像机位置朝向9参数矩阵
     private static float[] currMatrix;                  // 当前变换矩阵
 
-    private static float[] lightPosition = new float[]{0, 0, 0};    // 光源位置
+    private static float[] lightPosition = new float[]{0, 0, 0};    // 点光源位置
     public static FloatBuffer lightBuffer;
+
+    private static float[] directLightPosition = new float[] {0, 0, 0};// 平行光源位置
+    public static FloatBuffer directLightBuffer;
 
     static float[] mMVPMatrix = new float[16];          // 获取具体物体的总变换矩阵
     static float[][] mStack = new float[10][16];        // 保护变换矩阵的栈
@@ -45,6 +48,12 @@ public class MatrixState {
         stackTop--;
     }
 
+    /**
+     * 点光源位置
+     * @param x x
+     * @param y y
+     * @param z z
+     */
     public static void setLightPosition(float x, float y, float z) {
         lightPosition[0] = x;
         lightPosition[1] = y;
@@ -53,6 +62,21 @@ public class MatrixState {
         if (lightBuffer != null)
             lightBuffer.clear();
         lightBuffer = BufferUtil.toFloatBuffer(lightPosition);
+    }
+
+    /**
+     * 平行光源位置
+     * @param x
+     * @param y
+     * @param z
+     */
+    public static void setSunLightPosition(float x, float y, float z) {
+        directLightPosition[0] = x;
+        directLightPosition[1] = y;
+        directLightPosition[2] = z;
+        if (directLightBuffer != null)
+            directLightBuffer.clear();
+        directLightBuffer = BufferUtil.toFloatBuffer(directLightPosition);
     }
 
     /**
