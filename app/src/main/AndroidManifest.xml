@@ -27,6 +27,8 @@
 
         <activity android:name=".activity.TextureActivity_" />
 
+        <activity android:name=".activity.TextureEarthActivity_" />
+
     </application>
 
 </manifest>
