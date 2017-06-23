@@ -9,6 +9,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.R;
+import cn.dream.android.opengles20.shape.PointPlanet;
 import cn.dream.android.opengles20.shape.TextureEarth;
 import cn.dream.android.opengles20.shape.TextureSquare;
 import cn.dream.android.opengles20.utils.MatrixState;
@@ -26,6 +27,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
     private Context context;
     private TextureEarth textureEarth;
     private TextureEarth textureMoon;
+    private PointPlanet pointPlanet;
 
     private float angleX, angleY;
     private float angleSelf, angleEarth, angleMoon;
@@ -40,6 +42,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
 
         textureEarth = new TextureEarth(context, 1, R.mipmap.earth);
         textureMoon = new TextureEarth(context, 0.4f, R.mipmap.moon);
+        pointPlanet = new PointPlanet();
 
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -52,7 +55,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glViewport(0, 0, width, height);
         float radio = (float) width / height;
-        MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 10);
+        MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 100);
         MatrixState.setCamera(0, 0, 5, 0, 0, 0, 0, 3, 0);
         MatrixState.setInitStack();
     }
@@ -63,7 +66,12 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
 
         MatrixState.pushMatrix();
         MatrixState.rotate(angleX, 1, 0, 0);
-        MatrixState.rotate(angleY + angleSelf, 0, 1, 0);
+        MatrixState.rotate(angleY, 0, 1, 0);
+
+        MatrixState.pushMatrix();
+        MatrixState.rotate(angleSelf, 0, 1, 0);
+        pointPlanet.drawSelf();
+        MatrixState.popMatrix();
 
         MatrixState.pushMatrix();
         MatrixState.rotate(angleEarth, 0, 1, 0);
@@ -71,6 +79,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
         MatrixState.popMatrix();
 
         MatrixState.pushMatrix();
+        MatrixState.rotate(angleEarth, 0, 1, 0);
         MatrixState.translate(2, 0, 0);
         MatrixState.rotate(angleMoon, 0, 1, 0);
         textureMoon.drawSelf();
@@ -78,7 +87,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
 
         MatrixState.popMatrix();
 
-        angleSelf += 0.3f;
+        angleSelf += 0.08f;
         angleEarth += 0.2f;
         angleMoon -= 0.8f;
     }
