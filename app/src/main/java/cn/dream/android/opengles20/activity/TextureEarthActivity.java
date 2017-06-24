@@ -52,6 +52,7 @@ public class TextureEarthActivity extends Activity {
                         float dy = y - mPreviousY;  //计算触控笔Y位移
                         float dx = x - mPreviousX;  //计算触控笔X位移
                         renderer.addAngle(dy * 0.56f, dx * 0.56f);
+                        break;
                 }
                 mPreviousY = y;                     //记录触控笔位置
                 mPreviousX = x;                     //记录触控笔位置

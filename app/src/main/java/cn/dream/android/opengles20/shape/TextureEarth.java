@@ -9,7 +9,6 @@ import android.util.Log;
 
 import java.nio.FloatBuffer;
 
-import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;
@@ -27,17 +26,46 @@ public class TextureEarth {
     private float[] texture;
     private int vertexCount;
 
+    private float[] ambient = new float[]{     // 环境光
+            0.5f, 0.5f, 0.5f, 1
+    };
+
+    private float[] diffuse = new float[]{     // 漫射光
+            0.8f, 0.8f, 0.8f, 1
+    };
+
+    private float[] specular = new float[]{     // 反射光
+            0.1f, 0.1f, 0.1f, 1
+    };
+
     private int mProgram;
-    private int uMVPMatrixHandle;
     private int vertexHandle;
+    private int normalHandle;               // 法向量
     private int textureHandle;
+
+    private int ambientHandle;
+    private int diffuseHandle;
+    private int specularHandle;
+    private int lightPositionHandle;        // 点光源位置
+    private int sTextureDayHandle;          // 地球白天纹理引用
+    private int sTextureNightHandle;        // 地球夜晚纹理引用
+
+    private int cameraHandle;
+    private int mMatrixHandle;
+    private int uMVPMatrixHandle;
 
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
 
-    private int[] texturesId = new int[1];
+    private FloatBuffer ambientBuffer;
+    private FloatBuffer diffuseBuffer;
+    private FloatBuffer specularBuffer;
 
-    public TextureEarth(Context context, float radios, int bitmapId) {
+    private boolean isEarth = false;
+
+    public TextureEarth(Context context, float radios, boolean isEarth) {
+        this.isEarth = isEarth;
+
         long time = System.currentTimeMillis();
         initVertex(radios);
         Log.e(TAG, "TextureEarth() initVertex take time =" + (System.currentTimeMillis() - time));
@@ -45,45 +73,40 @@ public class TextureEarth {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         textureBuffer = BufferUtil.toFloatBuffer(texture);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), bitmapId);    // 图片的宽、高严格来讲是2的倍数
+        ambientBuffer = BufferUtil.toFloatBuffer(ambient);
+        diffuseBuffer = BufferUtil.toFloatBuffer(diffuse);
+        specularBuffer = BufferUtil.toFloatBuffer(specular);
 
-        mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
+        if (isEarth) {
+            Log.e(TAG, "earth createProgram");
+            mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/vertex_earth.sh", context.getResources()),
+                    ShaderUtil.loadFromAssetsFile("opengles/code/fragment_earth.sh", context.getResources()));
+        } else {
+            Log.e(TAG, "moon createProgram");
+            mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/vertex_moon.sh", context.getResources()),
+                    ShaderUtil.loadFromAssetsFile("opengles/code/fragment_moon.sh", context.getResources()));
+        }
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
-        GLES20.glGenTextures(1, texturesId, 0);                     // 获取产生的纹理id
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[0]);  // 绑定纹理id
+        normalHandle = GLES20.glGetAttribLocation(mProgram, "aNormal");
+        ambientHandle = GLES20.glGetUniformLocation(mProgram, "uAmbient");
+        diffuseHandle = GLES20.glGetUniformLocation(mProgram, "uDiffuse");
+        specularHandle = GLES20.glGetUniformLocation(mProgram, "uSpecular");
+        sTextureDayHandle = GLES20.glGetUniformLocation(mProgram, "aTextureDay");
+        if (isEarth)
+            sTextureNightHandle = GLES20.glGetUniformLocation(mProgram, "aTextureNight");
 
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);      // 设置MIN时为最近采样方式
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);       // 设置MAG时为线性采样方式
-        /**
-         * GL_TEXTURE_MIN_FILTER与GL_TEXTURE_MAG_FILTER都需要设置，当纹理图比映射的图元大时，采用MIN；反之采用MAG。
-         * MAG方式容易产生的锯齿明显、MIN则反之；通俗来讲就是把原材料放大缩小到规定大小
-         *
-         * 可选择的参数:GL_NEAREST,GL_LINEAR,GL_LINEAR_MIPMAP_LINEAR,GL_LINEAR_MIPMAP_NEAREST,GL_NEAREST_MIPMAP_LINEAR,GL_NEAREST_MIPMAP_NEAREST
-         * 当GL_NEAREST时，为最近一个像素拉伸，容易产生锯齿效果
-         * 当GL_LINEAR是，为对应点周围的加权平均值，平滑过度，消除锯齿，但有时候会很模糊
-         * 若一张大图进行显示，会出现近处被放大而显示锯齿，远处缩小视图较清晰，所以用MIPMAP采样，原理：近处清晰，远处模糊；
-         *      glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-         *      GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-         */
+        lightPositionHandle = GLES20.glGetUniformLocation(mProgram, "uLightPosition");
+        cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
+        mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
+        uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
-
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);           // 沿着S轴方向拉伸
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);           // 沿着T轴方向拉伸
-        /**
-         * 可选择的参数:GL_REPEAT,GL_CLAMP_TO_EDGE
-         * 当GL_REPEAT时，texture如果坐标大于１，则会产生重复图样，带小数则显示图样对应的部分，
-         *      如S=3.3，则重复3个图样，然后在重复0.3个图样切图
-         * 当GL_REPEAT时，texture如果坐标大于１，则会产生图样截取拉伸，
-         *      如T=3.3，则拉伸图样T方向最后一个像素至3.3位置
-         */
-
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0); // 实际加载纹理进显存，参数解释：纹理类型；纹理的层次，０表示基本图像，可以理解为直接贴图；；纹理边框尺寸　
-        bitmap.recycle();                                       // 加载纹理成功后回收bitmap
+        Log.e(TAG, "TextureEarth() end isEarth=" + isEarth);
     }
+
 
     private void initVertex(float radios) {
         float radius = 1f * radios;
@@ -132,13 +155,13 @@ public class TextureEarth {
                 vertex[k++] = z3;
 
                 // 第二个三角形
-                vertex[k++] = x2;
-                vertex[k++] = y2;
-                vertex[k++] = z2;
-
                 vertex[k++] = x3;
                 vertex[k++] = y3;
                 vertex[k++] = z3;
+
+                vertex[k++] = x2;
+                vertex[k++] = y2;
+                vertex[k++] = z2;
 
                 vertex[k++] = x4;
                 vertex[k++] = y4;
@@ -166,11 +189,11 @@ public class TextureEarth {
                 texture[k++] = t2;
 
                 // 第二个三角形对应的纹理顶点
-                texture[k++] = s2;
-                texture[k++] = t1;
-
                 texture[k++] = s1;
                 texture[k++] = t2;
+
+                texture[k++] = s2;
+                texture[k++] = t1;
 
                 texture[k++] = s2;
                 texture[k++] = t2;
@@ -178,19 +201,66 @@ public class TextureEarth {
         }
     }
 
+    /**
+     * @param ads the abbreviation of the ambient, diffuse and the specular in a order
+     */
+    public void setADS(float[] ads){
+        if (ads.length == 12) {
+            ambient[0] = ads[0];
+            ambient[1] = ads[1];
+            ambient[2] = ads[2];
+            ambient[3] = ads[3];
 
-    public void drawSelf() {
+            diffuse[0] = ads[4];
+            diffuse[1] = ads[5];
+            diffuse[2] = ads[6];
+            diffuse[3] = ads[7];
+
+            specular[0] = ads[8];
+            specular[1] = ads[9];
+            specular[2] = ads[10];
+            specular[3] = ads[11];
+
+            ambientBuffer = BufferUtil.toFloatBuffer(ambient);
+            diffuseBuffer = BufferUtil.toFloatBuffer(diffuse);
+            specularBuffer = BufferUtil.toFloatBuffer(specular);
+        } else throw new IllegalArgumentException("the ads's length must be bigger than 12!");
+    }
+
+    public void drawSelf(int[] texturesId) {
         GLES20.glUseProgram(mProgram);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
+        GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, MatrixState.getMMatrix(), 0);
+
+        GLES20.glUniform3fv(lightPositionHandle, 1, MatrixState.lightBuffer);
+        GLES20.glUniform3fv(cameraHandle, 1, MatrixState.cameraBuffer);
+
+        GLES20.glUniform4fv(ambientHandle, 1, ambientBuffer);
+        GLES20.glUniform4fv(diffuseHandle, 1, diffuseBuffer);
+        GLES20.glUniform4fv(specularHandle, 1, specularBuffer);
 
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
+        GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
+
+        if (isEarth) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);                 // 设置使用的纹理编号
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[0]);  // 绑定纹理id
+            GLES20.glUniform1i(sTextureDayHandle, 0);
+
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE1);                 // 设置使用的纹理编号
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[1]);  // 绑定纹理id
+            GLES20.glUniform1i(sTextureNightHandle, 1);
+        } else {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);                 // 设置使用的纹理编号
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[2]);  // 绑定纹理id
+            GLES20.glUniform1i(sTextureDayHandle, 0);
+        }
 
         GLES20.glEnableVertexAttribArray(vertexHandle);
         GLES20.glEnableVertexAttribArray(textureHandle);
+        GLES20.glEnableVertexAttribArray(normalHandle);
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);                 // 设置使用的纹理编号
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[0]);  // 绑定纹理id
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
     }

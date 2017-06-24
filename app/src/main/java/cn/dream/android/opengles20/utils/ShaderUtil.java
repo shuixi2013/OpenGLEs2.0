@@ -71,9 +71,9 @@ public class ShaderUtil {
         int program = GLES20.glCreateProgram();
         if (program != 0) {
             GLES20.glAttachShader(program, vertexShader);
-            checkGlError("glAttachShader");
+            checkGlError("glAttachShader vertexShader");
             GLES20.glAttachShader(program, pixelShader);
-            checkGlError("glAttachShader");
+            checkGlError("glAttachShade pixelShaderr");
             GLES20.glLinkProgram(program);
             int[] linkStatus = new int[1];
             GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);

@@ -65,7 +65,7 @@ public class MatrixState {
     }
 
     /**
-     * 平行光源位置
+     * 平行光源位置，当与点光源共存时就体现两个方法的重用性
      * @param x
      * @param y
      * @param z
