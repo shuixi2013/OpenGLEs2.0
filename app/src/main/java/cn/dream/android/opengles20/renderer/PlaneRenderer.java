@@ -8,6 +8,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.shape.Square;
+import cn.dream.android.opengles20.shape.Torus;
 import cn.dream.android.opengles20.utils.MatrixState;
 
 /**
@@ -20,12 +21,16 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
     private final static String TAG = PlaneRenderer.class.getSimpleName();
 
     private Square square;
+    private Torus torus;
     private float angle;
+
+    private float angleX;
+    private float angleY;
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated()");
-
+        torus = new Torus(1,0.4f);
         square = new Square();
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -38,8 +43,8 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
 
         float radio = (float) width / height;
-        MatrixState.setProjectOrtho(-radio, radio, -1, 1, 2, 10);
-        MatrixState.setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);
+        MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 100);
+        MatrixState.setCamera(0, 0, 5, 0, 0, 0, 0, 1, 0);
         MatrixState.setInitStack();
     }
 
@@ -48,8 +53,16 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         MatrixState.pushMatrix();
-        MatrixState.rotate(angle++, 0, 1, 0);
-        square.drawSelf();
+        MatrixState.rotate(angleX, 0, 0, 1);
+        MatrixState.rotate(angleY, 1, 0, 0);
+        //MatrixState.rotate(angle++, 1, 0, 0);
+        //square.drawSelf();
+        torus.drawSelf();
         MatrixState.popMatrix();
+    }
+
+    public void addAngle(float angleX, float angleY) {
+        this.angleX += angleX;
+        this.angleY += angleY;
     }
 }

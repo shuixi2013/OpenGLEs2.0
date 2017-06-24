@@ -1,6 +1,7 @@
 package cn.dream.android.opengles20.shape;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.FloatBuffer;
 
@@ -19,20 +20,14 @@ public class Torus {
 
     public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" + // 总变换矩阵
             "attribute vec3 aPosition;\n" +                                 // 顶点位置
-            "attribute vec4 aColor;\n" +                                    // 顶点颜色
-            "attribute vec2 aTexture;\n" +                                  // 顶点纹理
-            "varying  vec4 vColor;\n" +                                     // 用于传递给片元着色器的易变变量
-            "varying  vec2 vTexture;\n" +
             "void main() {\n" +
             "   gl_Position = uMVPMatrix * vec4(aPosition,1);\n" +          // 根据总变换矩阵计算此次绘制顶点的位置
-            "   vColor = aColor;\n" +                                       // 将接收的顶点颜色传递给片元着色器
-            "   vTexture = aTexture;\n" +
             "}";
 
     public final static String FRAGMENT_CODE = "precision mediump float;\n" +
             "varying  vec4 vColor;\n" +                                     // 接收从顶点着色器传过来的易变变量
             "void main() {\n" +
-            "   gl_FragColor = vColor;\n" +                                 // 给片源附上颜色值
+            "   gl_FragColor = vec4(0.2, 0.3, 0.9, 1);\n" +                                 // 给片源附上颜色值
             "}";
 
 
@@ -47,8 +42,10 @@ public class Torus {
     private float outerRadius;  // 圆环体中心到实心圆圆心的距离
     private float innerRadius;  // 圆环体实心圆半径
 
-    public Torus() {
+    public Torus(float outerRadius, float innerRadius) {
         long time = System.currentTimeMillis();
+        this.outerRadius = outerRadius;
+        this.innerRadius = innerRadius;
         int startAngle =  0, endAngle = 360;
         int k = 0;
         pointCount = 6 * endAngle / 10 * endAngle / 10;
@@ -95,19 +92,21 @@ public class Torus {
                 vertex[k++] = x4;
                 vertex[k++] = y4;
                 vertex[k++] = z4;
+                if (i == 0 && j == 0)
+                    Log.e(TAG, "(" + x1 + " " + y1 + " " + z1 + ") (" + x2 + " " + y2 + " " + z2 + ") (" + x3 + " " + y3 + " " + z3 + ") (" + x4 + " " + y4 + " " + z4 + ")" );
             }
         }
 
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
 
-        mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT_CODE);
+        mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        Log.e(TAG, "Torus() end time=" + (System.currentTimeMillis() - time));
     }
 
     public void drawSelf() {
-
-        GLES20.glUseProgram(mProgram);  // 制定使用某套shader程序
+        GLES20.glUseProgram(mProgram);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
 
