@@ -38,7 +38,7 @@ public class PlaneActivity extends Activity {
 
     @AfterViews
     void afterViews() {
-        planeRenderer = new PlaneRenderer();
+        planeRenderer = new PlaneRenderer(this);
         glSurfaceView.setRenderer(planeRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 

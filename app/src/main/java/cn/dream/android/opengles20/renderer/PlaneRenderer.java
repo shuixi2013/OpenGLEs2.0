@@ -1,5 +1,6 @@
 package cn.dream.android.opengles20.renderer;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
@@ -20,6 +21,7 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
 
     private final static String TAG = PlaneRenderer.class.getSimpleName();
 
+    private Context context;
     private Square square;
     private Torus torus;
     private float angle;
@@ -27,10 +29,14 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
     private float angleX;
     private float angleY;
 
+    public PlaneRenderer(Context context) {
+        this.context = context;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated()");
-        torus = new Torus(1,0.4f);
+        torus = new Torus(context, 1,0.4f);
         square = new Square();
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
