@@ -81,22 +81,27 @@ public class Torus {
         vertex = new float[pointCount * 3];
         texture = new float[pointCount * 2];
 
-        for (int i = startAngle; i < endAngle; i = i + 10) {        // XOZ平面切图的逆时针角度递增
-            for (int j = startAngle; j < endAngle; j = j + 10) {    // X'OY平面切图的逆时针角度递增
-                float x1 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j))) * Math.sin(Math.toRadians(i)));
-                float x2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.sin(Math.toRadians(i)));
-                float x3 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j))) * Math.sin(Math.toRadians(i + 10)));
-                float x4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.sin(Math.toRadians(i + 10)));
+        for (int i = startAngle; i < endAngle; i = i + 10) {        // XOZ平面切图，从Z轴开始，逆时针角度递增
+            double iTemp = Math.toRadians(i);
+            double iTemp2 = Math.toRadians(i + 10);
+
+            for (int j = startAngle; j < endAngle; j = j + 10) {    // X'OY平面切图，从X'轴开始，逆时针角度递增
+                double resultTemp = innerRadius * Math.cos(Math.toRadians(j));
+
+                float x1 = (float) ((outerRadius + resultTemp) * Math.sin(iTemp));
+                float x2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.sin(iTemp));
+                float x3 = (float) ((outerRadius + resultTemp) * Math.sin(iTemp2));
+                float x4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.sin(iTemp2));
 
                 float y1 = (float) (innerRadius * Math.sin(Math.toRadians(j)));
                 float y2 = (float) (innerRadius * Math.sin(Math.toRadians(j + 10)));
-                float y3 = y1;
-                float y4 = y2;
+                //float y3 = y1;
+                //float y4 = y2;
 
-                float z1 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j))) * Math.cos(Math.toRadians(i)));
-                float z2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.cos(Math.toRadians(i)));
-                float z3 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j))) * Math.cos(Math.toRadians(i + 10)));
-                float z4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.cos(Math.toRadians(i + 10)));
+                float z1 = (float) ((outerRadius + resultTemp) * Math.cos(iTemp));
+                float z2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.cos(iTemp));
+                float z3 = (float) ((outerRadius + resultTemp) * Math.cos(iTemp2));
+                float z4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.cos(iTemp2));
 
                 // 第一个三角形
                 vertex[k++] = x1;
@@ -104,7 +109,7 @@ public class Torus {
                 vertex[k++] = z1;
 
                 vertex[k++] = x3;
-                vertex[k++] = y3;
+                vertex[k++] = y1;
                 vertex[k++] = z3;
 
                 vertex[k++] = x2;
@@ -117,47 +122,48 @@ public class Torus {
                 vertex[k++] = z2;
 
                 vertex[k++] = x3;
-                vertex[k++] = y3;
+                vertex[k++] = y1;
                 vertex[k++] = z3;
 
                 vertex[k++] = x4;
-                vertex[k++] = y4;
+                vertex[k++] = y2;
                 vertex[k++] = z4;
             }
         }
 
         k = 0;
-        for (int i = startAngle; i < endAngle; i = i + 10) {        // XOZ平面切图的逆时针角度递增
+        int offSet = 180;   // 图片位置偏移
+        for (int i = endAngle; i > startAngle; i = i - 10) {        // 从右往左切割
             float x1 = (float)(i) / endAngle;
-            float x2 = (float)(i + 10) / endAngle;
-            float x3 = x1;
-            float x4 = x2;
+            //float x2 = x1;
+            float x3 = (float)(i - 10) / endAngle;
+            //float x4 = x3;
 
-            for (int j = startAngle; j < endAngle; j = j + 10) {    // X'OY平面切图的逆时针角度递增
-                float y1 = (float)(j) / endAngle;
-                float y2 = (float)(j + 10) / endAngle;
-                float y3 = y1;
-                float y4 = y2;
+            for (int j = startAngle; j < endAngle; j = j + 10) {    // 从上到下切割
+                float y1 = (float)(j + offSet) / endAngle;
+                float y2 = (float)(j + offSet + 10) / endAngle;
+                //float y3 = y1;
+                //float y4 = y2;
 
                 // 第一个三角形贴图
                 texture[k++] = x1;
                 texture[k++] = y1;
 
                 texture[k++] = x3;
-                texture[k++] = y3;
+                texture[k++] = y1;
 
-                texture[k++] = x2;
+                texture[k++] = x1;
                 texture[k++] = y2;
 
                 // 第二个三角形贴图
-                texture[k++] = x2;
+                texture[k++] = x1;
                 texture[k++] = y2;
 
                 texture[k++] = x3;
-                texture[k++] = y3;
+                texture[k++] = y1;
 
-                texture[k++] = x4;
-                texture[k++] = y4;
+                texture[k++] = x3;
+                texture[k++] = y2;
             }
         }
     }

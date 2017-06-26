@@ -22,7 +22,7 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
     private final static String TAG = PlaneRenderer.class.getSimpleName();
 
     private Context context;
-    private Square square;
+    //private Square square;
     private Torus torus;
     private float angle;
 
@@ -37,9 +37,10 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated()");
         torus = new Torus(context, 1,0.4f);
-        square = new Square();
+        //square = new Square();
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
     }
 
     @Override
