@@ -51,57 +51,114 @@ public class Torus {
     private int uTextureHandle;
     private int uMVPMatrixHandle;
 
-    private float outerRadius;  // 圆环体中心到实心圆圆心的距离
-    private float innerRadius;  // 圆环体实心圆半径
+    private float outerRadius;      // 圆环体中心到实心圆圆心的距离
+    private float innerRadius;      // 圆环体实心圆半径
+    private int unitAngle = 10;     // 角度切分精度值
+    private float torusHeight = 0;  // XOZ平面切图，管状体在Y轴上的渐变高度梯度
+
+    private int startAngle =  0;    // X'OY平面切图，开始角度
+    private int endAngle = 360;     // X'OY平面切图，结束角度
+    private int hStartAngle = 0;    // XOZ平面切图，开始角度
+    private int hEndAngle = 360;    // XOZ平面切图，结束角度
 
     public Torus(Context context, float outerRadius, float innerRadius) {
         long time = System.currentTimeMillis();
         this.outerRadius = outerRadius;
         this.innerRadius = innerRadius;
+
+        if (outerRadius < innerRadius) {
+            throw new IllegalArgumentException("The outerRadius must be bigger than innerRadius");
+        }
+        
         initData();
-        vertexBuffer = BufferUtil.toFloatBuffer(vertex);
-        textureBuffer = BufferUtil.toFloatBuffer(texture);
 
         mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         aTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
         uTextureHandle = GLES20.glGetUniformLocation(mProgram, "uTexture");
-
+        
         GLES20.glGenTextures(1, textureId, 0);
         ShaderUtil.bindTextureId(context, textureId[0], R.mipmap.tietu001);
 
         Log.e(TAG, "Torus() end time=" + (System.currentTimeMillis() - time));
     }
 
+    /**
+     * @param hStartAngle XOZ平面切图，开始角度
+     * @param hEndAngle   XOZ平面切图，结束角度
+     * @param endAngle    X'OY平面切图，开始角度
+     * @param startAngle  X'OY平面切图，结束角度
+     */
+    public void setTorusAngle(int hStartAngle, int hEndAngle, int startAngle, int endAngle) {
+        if (hStartAngle < 0 || startAngle < 0)
+            throw new IllegalArgumentException("The hStartAngle and the startAngle must be a natural number");
+        if (hStartAngle > hEndAngle)
+            throw new IllegalArgumentException("The hStartAngle must be smaller than hEndAngle");
+        if (startAngle > endAngle)
+            throw new IllegalArgumentException("The startAngle must be smaller than endAngle");
+        this.hEndAngle = hEndAngle;
+        this.hStartAngle = hStartAngle;
+        this.startAngle = startAngle;
+        this.endAngle = endAngle;
+    }
+
+    /**
+     * @param unitAngle 角度切分精度值，其值越小，构造的图形越接近真实，但计算量将增加
+     */
+    public void setUnitAngle(int unitAngle) {
+        if (unitAngle < 0)
+            throw new IllegalArgumentException("The unitAngle must be bigger than 0");
+        if ((this.hEndAngle - this.hStartAngle) % unitAngle != 0)
+            Log.e(TAG, "THe unitAngle should be divided by the difference value of the hEndAngle and the hStartAngle");
+        if ((this.endAngle - this.startAngle) % unitAngle != 0)
+            Log.e(TAG, "THe unitAngle should be divided by the difference value of the endAngle and the startAngle");
+        this.unitAngle = unitAngle;
+    }
+
+    /**
+     * @param torusHeight 螺旋管的高度梯度
+     */
+    public void setTorusHeight(float torusHeight) {
+        if (torusHeight < 0)
+            throw new IllegalArgumentException("The torusHeight must be bigger than 0");
+        this.torusHeight = torusHeight;
+    }
+
+    public void initTorusData() {
+        initData();
+    }
+    /**
+     * 根据已知参数计算顶点和纹理坐标
+     */
     private void initData() {
-        int startAngle =  0, endAngle = 360;
         int k = 0;
-        pointCount = 6 * endAngle / 10 * endAngle / 10;
+        float vAddUnit = torusHeight / (hEndAngle / unitAngle);
+        pointCount = 6 * endAngle / unitAngle * hEndAngle / unitAngle;
         vertex = new float[pointCount * 3];
         texture = new float[pointCount * 2];
 
-        for (int i = startAngle; i < endAngle; i = i + 10) {        // XOZ平面切图，从Z轴开始，逆时针角度递增
+        for (int i = hStartAngle; i < hEndAngle; i = i + unitAngle) {        // XOZ平面切图，从Z轴开始，逆时针角度递增
             double iTemp = Math.toRadians(i);
-            double iTemp2 = Math.toRadians(i + 10);
+            double iTemp2 = Math.toRadians(i + unitAngle);
 
-            for (int j = startAngle; j < endAngle; j = j + 10) {    // X'OY平面切图，从X'轴开始，逆时针角度递增
+            for (int j = startAngle; j < endAngle; j = j + unitAngle) {    // X'OY平面切图，从X'轴开始，逆时针角度递增
                 double resultTemp = innerRadius * Math.cos(Math.toRadians(j));
 
                 float x1 = (float) ((outerRadius + resultTemp) * Math.sin(iTemp));
-                float x2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.sin(iTemp));
+                float x2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +unitAngle))) * Math.sin(iTemp));
                 float x3 = (float) ((outerRadius + resultTemp) * Math.sin(iTemp2));
-                float x4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.sin(iTemp2));
+                float x4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + unitAngle))) * Math.sin(iTemp2));
 
-                float y1 = (float) (innerRadius * Math.sin(Math.toRadians(j)));
-                float y2 = (float) (innerRadius * Math.sin(Math.toRadians(j + 10)));
-                //float y3 = y1;
-                //float y4 = y2;
+                float y1 = (float) (innerRadius * Math.sin(Math.toRadians(j)) +  i / unitAngle * vAddUnit);
+                float y2 = (float) (innerRadius * Math.sin(Math.toRadians(j + unitAngle)) + i / unitAngle * vAddUnit);
+                float y3 = y1 + vAddUnit;
+                float y4 = y2 + vAddUnit;
 
                 float z1 = (float) ((outerRadius + resultTemp) * Math.cos(iTemp));
-                float z2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +10))) * Math.cos(iTemp));
+                float z2 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j +unitAngle))) * Math.cos(iTemp));
                 float z3 = (float) ((outerRadius + resultTemp) * Math.cos(iTemp2));
-                float z4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + 10))) * Math.cos(iTemp2));
+                float z4 = (float) ((outerRadius + innerRadius * Math.cos(Math.toRadians(j + unitAngle))) * Math.cos(iTemp2));
 
                 // 第一个三角形
                 vertex[k++] = x1;
@@ -109,7 +166,7 @@ public class Torus {
                 vertex[k++] = z1;
 
                 vertex[k++] = x3;
-                vertex[k++] = y1;
+                vertex[k++] = y3;
                 vertex[k++] = z3;
 
                 vertex[k++] = x2;
@@ -122,26 +179,26 @@ public class Torus {
                 vertex[k++] = z2;
 
                 vertex[k++] = x3;
-                vertex[k++] = y1;
+                vertex[k++] = y3;
                 vertex[k++] = z3;
 
                 vertex[k++] = x4;
-                vertex[k++] = y2;
+                vertex[k++] = y4;
                 vertex[k++] = z4;
             }
         }
 
         k = 0;
         int offSet = 180;   // 图片位置偏移
-        for (int i = endAngle; i > startAngle; i = i - 10) {        // 从右往左切割
-            float x1 = (float)(i) / endAngle;
+        for (int i = hEndAngle; i > hStartAngle; i = i - unitAngle) {        // 从右往左切割
+            float x1 = (float)(i) / hEndAngle;
             //float x2 = x1;
-            float x3 = (float)(i - 10) / endAngle;
+            float x3 = (float)(i - unitAngle) / hEndAngle;
             //float x4 = x3;
 
-            for (int j = startAngle; j < endAngle; j = j + 10) {    // 从上到下切割
+            for (int j = startAngle; j < endAngle; j = j + unitAngle) {    // 从上到下切割
                 float y1 = (float)(j + offSet) / endAngle;
-                float y2 = (float)(j + offSet + 10) / endAngle;
+                float y2 = (float)(j + offSet + unitAngle) / endAngle;
                 //float y3 = y1;
                 //float y4 = y2;
 
@@ -166,6 +223,9 @@ public class Torus {
                 texture[k++] = y2;
             }
         }
+
+        vertexBuffer = BufferUtil.toFloatBuffer(vertex);
+        textureBuffer = BufferUtil.toFloatBuffer(texture);
     }
 
     public void drawSelf() {

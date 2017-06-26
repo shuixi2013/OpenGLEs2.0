@@ -37,6 +37,10 @@ public class PlaneRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated()");
         torus = new Torus(context, 1,0.4f);
+        torus.setTorusAngle(0, 720, 0, 360);
+        torus.setTorusHeight(2f);
+        torus.setUnitAngle(10);
+        torus.initTorusData();
         //square = new Square();
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
