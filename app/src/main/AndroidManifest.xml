@@ -29,6 +29,8 @@
 
         <activity android:name=".activity.TextureEarthActivity_" />
 
+        <activity android:name=".activity.CurveGeometryActivity_" />
+
     </application>
 
 </manifest>

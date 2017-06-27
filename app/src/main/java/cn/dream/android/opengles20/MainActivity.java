@@ -7,6 +7,7 @@ import android.view.View;
 
 import org.androidannotations.annotations.EActivity;
 
+import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
@@ -39,5 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onTextureEarth(View view) {
         startActivity(new Intent(this, TextureEarthActivity_.class));
+    }
+
+    public void onCurveGeometry(View view) {
+        startActivity(new Intent(this, CurveGeometryActivity_.class));
     }
 }

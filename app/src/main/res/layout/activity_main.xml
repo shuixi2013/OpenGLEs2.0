@@ -33,31 +33,43 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/button"
+        android:layout_toRightOf="@+id/button"
         android:onClick="onPlane"
         android:text="Plane"
-        android:textAllCaps="false"
-        android:layout_toRightOf="@+id/button"
-        android:layout_toEndOf="@+id/button"
-        android:layout_alignParentTop="true" />
+        android:textAllCaps="false" />
 
     <Button
+        android:id="@+id/button5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onTexture"
-        android:text="Texture"
-        android:textAllCaps="false"
         android:layout_alignBaseline="@+id/button3"
         android:layout_alignBottom="@+id/button3"
+        android:layout_toEndOf="@+id/button3"
         android:layout_toRightOf="@+id/button3"
-        android:layout_toEndOf="@+id/button3" />
+        android:onClick="onTexture"
+        android:text="Texture"
+        android:textAllCaps="false" />
 
     <Button
+        android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button3"
         android:onClick="onTextureEarth"
         android:text="TextureEarth"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button5"
+        android:layout_toEndOf="@+id/button4"
+        android:layout_toRightOf="@+id/button4"
+        android:text="CurveGeometry"
         android:textAllCaps="false"
-        android:id="@+id/button4" />
+        android:onClick="onCurveGeometry"/>
 
 </RelativeLayout>
