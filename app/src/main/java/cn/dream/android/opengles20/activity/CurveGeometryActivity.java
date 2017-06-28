@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.shape.CurveGeometry;
 import cn.dream.android.opengles20.utils.MatrixState;
+import cn.dream.android.opengles20.views.BezierCurve3View;
 
 /**
  * Created by lgb on 17-6-27.
@@ -32,6 +33,7 @@ public class CurveGeometryActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(new CurveGeometryView(this));
+        //setContentView(new BezierCurve3View(this));
     }
 
     class CurveGeometryView extends GLSurfaceView {
@@ -71,7 +73,7 @@ public class CurveGeometryActivity extends Activity {
             GLES20.glClearColor(0, 0, 0, 1);
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-            curveGeometry = new CurveGeometry();
+            curveGeometry = new CurveGeometry(CurveGeometryActivity.this);
         }
 
         @Override
