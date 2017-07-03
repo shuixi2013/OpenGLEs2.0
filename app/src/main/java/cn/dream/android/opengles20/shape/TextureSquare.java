@@ -35,10 +35,10 @@ public class TextureSquare {
 //    };
 
     private float[] texture = new float[]{
-            3.3f, 0,
-            3.3f, 3,
+            1f, 0,
+            1f, 1,
             0, 0,
-            0, 3
+            0, 1
     };
 
     private int mProgram;
@@ -53,12 +53,12 @@ public class TextureSquare {
 
     private int[] texturesId = new int[1];
 
-    public TextureSquare(Context context) {
+    public TextureSquare(Context context, int id) {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         textureBuffer = BufferUtil.toFloatBuffer(texture);
 //        colorBuffer = BufferUtil.toFloatBuffer(color);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);    // 图片的宽、高严格来讲是2的倍数
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id);    // 图片的宽、高严格来讲是2的倍数
 
         mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.TextureSquare;
 import cn.dream.android.opengles20.utils.MatrixState;
 
@@ -34,7 +35,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated()");
 
-        textureSquare = new TextureSquare(context);
+        textureSquare = new TextureSquare(context, R.mipmap.ic_launcher);
 
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
