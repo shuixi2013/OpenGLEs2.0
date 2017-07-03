@@ -13,6 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.PointPlanet;
+import cn.dream.android.opengles20.shape.TextureBall;
 import cn.dream.android.opengles20.shape.TextureEarth;
 import cn.dream.android.opengles20.shape.TextureSquare;
 import cn.dream.android.opengles20.utils.MatrixState;
@@ -33,6 +34,7 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
     private PointPlanet bigPlanet;
     private TextureEarth textureEarth;
     private TextureEarth textureMoon;
+    private TextureBall textureCloud;
 
     private float angleX, angleY;
     private float angleSelf, angleEarth, angleMoon;
@@ -53,6 +55,11 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
                 0.05f, 0.05f, 0.025f, 1.0f,
                 1.0f, 1.0f, 0.5f, 1.0f,
                 0.3f, 0.3f, 0.15f, 1.0f});
+        textureCloud = new TextureBall(context, 1.01f);
+        textureCloud.setADS(new float[]{
+                0.05f, 0.05f, 0.025f, 1.0f,
+                1.0f, 1.0f, 1.0f, 1.0f,
+                0.3f, 0.3f, 0.15f, 1.0f});
         GLES20.glClearColor(0, 0, 0, 1);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -69,11 +76,12 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
         MatrixState.setLightPosition(100, 5, 0);
         MatrixState.setInitStack();
 
-        texturesId = new int[3];
-        GLES20.glGenTextures(3, texturesId, 0);
+        texturesId = new int[4];
+        GLES20.glGenTextures(4, texturesId, 0);
         bindTexture(texturesId[0], R.mipmap.earth);
         bindTexture(texturesId[1], R.mipmap.earthn);
         bindTexture(texturesId[2], R.mipmap.moon);
+        bindTexture(texturesId[3], R.mipmap.cloud);
     }
 
     private void bindTexture(int textureId, int bitmapId) {
@@ -125,6 +133,10 @@ public class TextureEarthRenderer implements GLSurfaceView.Renderer {
         MatrixState.pushMatrix();
         MatrixState.rotate(angleEarth, 0, 1, 0);
         textureEarth.drawSelf(texturesId);
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        textureCloud.drawSelf(texturesId[3]);
+        GLES20.glDisable(GLES20.GL_BLEND);
         MatrixState.popMatrix();
 
         MatrixState.pushMatrix();
