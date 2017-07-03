@@ -31,6 +31,8 @@
 
         <activity android:name=".activity.CurveGeometryActivity_" />
 
+        <activity android:name=".MistActivity_" />
+
     </application>
 
 </manifest>

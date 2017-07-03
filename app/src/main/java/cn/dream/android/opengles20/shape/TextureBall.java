@@ -69,9 +69,13 @@ public class TextureBall {
         diffuseBuffer = BufferUtil.toFloatBuffer(diffuse);
         specularBuffer = BufferUtil.toFloatBuffer(specular);
 
+        initProgram(context, "opengles/code/vertex_moon.sh", "opengles/code/fragment_moon_mix.sh");
+        Log.e(TAG, "TextureBall() end");
+    }
 
-        mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile("opengles/code/vertex_moon.sh", context.getResources()),
-                ShaderUtil.loadFromAssetsFile("opengles/code/fragment_moon_mix.sh", context.getResources()));
+    public void initProgram(Context context, String assetPathVertex, String assetPathFrag) {
+        mProgram = ShaderUtil.createProgram(ShaderUtil.loadFromAssetsFile(assetPathVertex, context.getResources()),
+                ShaderUtil.loadFromAssetsFile(assetPathFrag, context.getResources()));
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
@@ -87,10 +91,7 @@ public class TextureBall {
         cameraHandle = GLES20.glGetUniformLocation(mProgram, "uCamera");
         mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-
-        Log.e(TAG, "TextureBall() end");
     }
-
 
     private void initVertex(float radios) {
         float radius = 1f * radios;

@@ -45,4 +45,8 @@ public class MainActivity extends AppCompatActivity {
     public void onCurveGeometry(View view) {
         startActivity(new Intent(this, CurveGeometryActivity_.class));
     }
+
+    public void onMistTest(View view) {
+        startActivity(new Intent(this, MistActivity_.class));
+    }
 }

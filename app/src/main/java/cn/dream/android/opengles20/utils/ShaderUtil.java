@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -97,6 +98,15 @@ public class ShaderUtil {
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e("ES20_ERROR", op + ": glError " + error);
             throw new RuntimeException(op + ": glError " + error);
+        }
+    }
+
+    public static void bindTextureId(Context context, @NonNull int[] texturesId, @NonNull int[] bitmapsId) {
+        if (texturesId.length != bitmapsId.length) {
+            throw new IllegalArgumentException("texturesId length is not equal bitmapsId length");
+        }
+        for (int i = 0; i < texturesId.length; i++) {
+            bindTextureId(context, texturesId[i], bitmapsId[i]);
         }
     }
 
