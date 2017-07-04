@@ -68,8 +68,8 @@ public class MistActivity extends Activity{
                     float dx = x - mPreviousX;//计算触控笔X位移
                     cx += dx * TOUCH_SCALE_FACTOR;//设置沿x轴旋转角度
                     //将cx限制在一定范围内
-                    cx = Math.max(cx, -200);
-                    cx = Math.min(cx, 200);
+                    cx = Math.max(cx, -400);
+                    cx = Math.min(cx, 400);
                     MatrixState.setCamera(cx, cy, cz, 0, 0, 0, 0, 1, 0);
                     break;
             }
@@ -97,9 +97,9 @@ public class MistActivity extends Activity{
             GLES20.glViewport(0, 0, width, height);
             float radio = (float) width / height;
             //MatrixState.setProjectFrustum(-radio, radio, -1, 1, 2, 100);
-            float a = 0.5f;
+            float a = 1f;
             MatrixState.setProjectFrustum(-radio*a, radio*a, -1*a, 1*a, 2, 1000);
-            MatrixState.setLightPosition(100, 100, 100);
+            MatrixState.setLightPosition(200, 200, 200);
             MatrixState.setCamera(cx, cy, cz, 0, 0, 0, 0, 1, 0);
             //MatrixState.setLightPosition(50, 50, 50);
             //MatrixState.setCamera(tempZ, 1, 5, 0, 0, 0, 0, 1, 0);
@@ -120,7 +120,7 @@ public class MistActivity extends Activity{
             MatrixState.rotate(selfAngle, 0, 1, 0);
             textureBall.drawSelf(texturesId[0]);
             MatrixState.popMatrix();
-            //selfAngle += 0.3f;
+            selfAngle += 0.3f;
         }
     }
 }
