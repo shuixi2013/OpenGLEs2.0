@@ -33,6 +33,8 @@
 
         <activity android:name=".MistActivity_" />
 
+        <activity android:name=".activity.GrayScaleImageActivity_" />
+
     </application>
 
 </manifest>

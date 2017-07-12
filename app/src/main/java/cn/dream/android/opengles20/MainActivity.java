@@ -1,13 +1,14 @@
 package cn.dream.android.opengles20;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import org.androidannotations.annotations.EActivity;
 
 import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
+import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
@@ -48,5 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMistTest(View view) {
         startActivity(new Intent(this, MistActivity_.class));
+    }
+
+    public void onGrayScaleImageTest(View view) {
+        startActivity(new Intent(this, GrayScaleImageActivity_.class));
     }
 }
