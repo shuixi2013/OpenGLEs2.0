@@ -21,9 +21,13 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.Mountain;
+import cn.dream.android.opengles20.shape.Tree;
 import cn.dream.android.opengles20.utils.Constant;
 import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;
+
+import static cn.dream.android.opengles20.shape.Mountain.UNIT_SIZE;
+import static cn.dream.android.opengles20.utils.Constant.yArray;
 
 /**
  * Created by lgb on 17-7-12.
@@ -101,6 +105,11 @@ public class GrayScaleImageActivity extends Activity {
         });
     }
 
+
+    /**
+     * 按住左上角摄像机前移，右上角摄像机后移
+     * 按住左下角摄像机向左旋转，右下角摄像机向右旋转
+     */
     @Background(delay = 10)
     void moveCamera() {
         if (x > 0 && x < WIDTH / 2 && y > 0 && y < HEIGHT / 2) {                //向前
@@ -141,6 +150,7 @@ public class GrayScaleImageActivity extends Activity {
 
         private int[] textureIds;
         private Mountain mountain;
+        private Tree tree;
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -151,6 +161,14 @@ public class GrayScaleImageActivity extends Activity {
 
             Constant.yArray = Constant.loadLandforms(getResources(), R.mipmap.land);    // 将灰度图写入一个float数组中
             mountain = new Mountain(Constant.yArray);
+
+            int posI = Constant.yArray.length / 2;
+            int posJ = Constant.yArray[0].length / 2;
+            float tX = -UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * UNIT_SIZE;
+            float tY = yArray[posJ][posI];
+            float tZ = -UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * UNIT_SIZE;
+
+            tree = new Tree(tX, tY, tZ);
         }
 
         @Override
@@ -163,9 +181,9 @@ public class GrayScaleImageActivity extends Activity {
             MatrixState.setCamera(cx, 3, cz, tx, 1, tz, 0, 1, 0);
             MatrixState.setInitStack();
 
-            textureIds = new int[1];
-            GLES20.glGenTextures(1, textureIds, 0);
-            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds, new int[]{R.mipmap.grass});
+            textureIds = new int[2];
+            GLES20.glGenTextures(2, textureIds, 0);
+            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds, new int[]{R.mipmap.grass, R.mipmap.tree});
         }
 
         @Override
@@ -173,6 +191,12 @@ public class GrayScaleImageActivity extends Activity {
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
             MatrixState.pushMatrix();
             mountain.drawSelf(textureIds[0]);
+
+            GLES20.glEnable(GLES20.GL_BLEND);   // 开启混合
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA); // 设置混合因子
+            tree.drawSelf(textureIds[1]);
+            GLES20.glDisable(GLES20.GL_BLEND);  // 关闭混合
+
             MatrixState.popMatrix();
         }
     }

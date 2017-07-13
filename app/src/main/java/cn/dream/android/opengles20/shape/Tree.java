@@ -1,6 +1,7 @@
 package cn.dream.android.opengles20.shape;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.FloatBuffer;
 
@@ -8,18 +9,16 @@ import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;
 
-import static cn.dream.android.opengles20.utils.Constant.yArray;
-
 /**
- * Created by lgb on 17-7-12.
- * Mountain: use the gray scale image
+ * Created by lgb on 17-7-13.
+ * Tree
  */
 
-public class Mountain {
+public class Tree {
 
-    private final static String TAG = Mountain.class.getSimpleName();
+    private final static String TAG = Tree.class.getSimpleName();
 
-    public final static float UNIT_SIZE = 1.0f;
+    private final static float UNIT_SIZE = 3.0f;
 
     private final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" +    //总变换矩阵
             "attribute vec3 aPosition;\n" +                                     //顶点位置
@@ -48,90 +47,35 @@ public class Mountain {
 
     private int vertexCount;
 
-    public Mountain(float[][] data) {
-        initVertex(data);
-        initTexture(data[0].length - 1, data.length - 1);
+    public Tree(float posX, float posY, float posZ) {
+        Log.d("Tree", "Tree() " + posX + " " + posY + " " + posZ);
+        initVertex(posX, posY, posZ);
+        initTexture();
         initShader();
     }
 
-    private void initVertex(float[][] data) {
-        int rows = data.length - 1;
-        int cols = data[0].length - 1;
-
-        vertexCount = rows * cols * 2 * 3;              // 灰度图中每个像素进行构建一个矩形
-        float[] vertex = new float[vertexCount * 3];
-        int k = 0;
-        for (int j = 0; j < rows; j++) {
-            for (int i = 0; i < cols; i++) {
-                //计算当前格子左上侧点坐标 
-                float zsx = -UNIT_SIZE * cols / 2 + i * UNIT_SIZE;
-                float zsz = -UNIT_SIZE * rows / 2 + j * UNIT_SIZE;
-
-                vertex[k++] = zsx;
-                vertex[k++] = yArray[j][i];
-                vertex[k++] = zsz;
-
-                vertex[k++] = zsx;
-                vertex[k++] = yArray[j + 1][i];
-                vertex[k++] = zsz + UNIT_SIZE;
-
-                vertex[k++] = zsx + UNIT_SIZE;
-                vertex[k++] = yArray[j][i + 1];
-                vertex[k++] = zsz;
-
-                vertex[k++] = zsx + UNIT_SIZE;
-                vertex[k++] = yArray[j][i + 1];
-                vertex[k++] = zsz;
-
-                vertex[k++] = zsx;
-                vertex[k++] = yArray[j + 1][i];
-                vertex[k++] = zsz + UNIT_SIZE;
-
-                vertex[k++] = zsx + UNIT_SIZE;
-                vertex[k++] = yArray[j + 1][i + 1];
-                vertex[k++] = zsz + UNIT_SIZE;
-            }
-        }
-
+    private void initVertex(float posX, float posY, float posZ) {
+        vertexCount = 4;
+        float[] vertex = new float[] {
+                0.4f * UNIT_SIZE + posX, 0f + posY, posZ,
+                -0.4f * UNIT_SIZE + posX, 0f + posY, posZ,
+                0.4f * UNIT_SIZE + posX, 1f * UNIT_SIZE + posY, posZ,
+                -0.4f * UNIT_SIZE + posX, 1f * UNIT_SIZE + posY, posZ
+        };
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
     }
 
-    //自动切分纹理产生纹理数组的方法
-    private void initTexture(int bw, int bh) {
-        float[] texture = new float[bw * bh * 6 * 2];
-        float sizew = 16.0f / bw;                       // 列数
-        float sizeh = 16.0f / bh;                       // 行数
-        int c = 0;
-        for (int i = 0; i < bh; i++) {
-            for (int j = 0; j < bw; j++) {
-                //每行列一个矩形，由两个三角形构成，共六个点，12个纹理坐标
-                float s = j * sizew;
-                float t = i * sizeh;
-
-                texture[c++] = s;
-                texture[c++] = t;
-
-                texture[c++] = s;
-                texture[c++] = t + sizeh;
-
-                texture[c++] = s + sizew;
-                texture[c++] = t;
-
-                texture[c++] = s + sizew;
-                texture[c++] = t;
-
-                texture[c++] = s;
-                texture[c++] = t + sizeh;
-
-                texture[c++] = s + sizew;
-                texture[c++] = t + sizeh;
-            }
-        }
+    private void initTexture() {
+        float[] texture = new float[] {
+                1, 1,
+                0, 1,
+                1, 0,
+                0, 0
+        };
         textureBuffer = BufferUtil.toFloatBuffer(texture);
     }
 
     private void initShader() {
-
         mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
@@ -154,6 +98,6 @@ public class Mountain {
         GLES20.glUniform1i(textureGrassHandle, 0);       // 使用0号纹理
 
         //绘制纹理矩形
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
     }
 }
