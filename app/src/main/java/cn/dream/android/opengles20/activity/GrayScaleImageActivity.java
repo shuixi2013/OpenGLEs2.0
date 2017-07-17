@@ -181,20 +181,20 @@ public class GrayScaleImageActivity extends Activity {
             MatrixState.setCamera(cx, 3, cz, tx, 1, tz, 0, 1, 0);
             MatrixState.setInitStack();
 
-            textureIds = new int[2];
-            GLES20.glGenTextures(2, textureIds, 0);
-            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds, new int[]{R.mipmap.grass, R.mipmap.tree});
+            textureIds = new int[3];
+            GLES20.glGenTextures(3, textureIds, 0);
+            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds, new int[]{R.mipmap.grass, R.mipmap.rock, R.mipmap.tree});
         }
 
         @Override
         public void onDrawFrame(GL10 gl) {
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
             MatrixState.pushMatrix();
-            mountain.drawSelf(textureIds[0]);
+            mountain.drawSelf(textureIds[0], textureIds[1]);
 
             GLES20.glEnable(GLES20.GL_BLEND);   // 开启混合
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA); // 设置混合因子
-            tree.drawSelf(textureIds[1]);
+            tree.drawSelf(textureIds[2]);
             GLES20.glDisable(GLES20.GL_BLEND);  // 关闭混合
 
             MatrixState.popMatrix();
