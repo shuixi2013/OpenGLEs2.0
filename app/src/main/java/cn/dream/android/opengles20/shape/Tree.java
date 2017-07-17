@@ -36,6 +36,12 @@ public class Tree {
             "   gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +     //给此片元从纹理中采样出颜色值
             "}";
 
+    private float posX;
+    private float posY;
+    private float posZ;
+
+    private float yAngle;
+
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
 
@@ -49,24 +55,27 @@ public class Tree {
 
     public Tree(float posX, float posY, float posZ) {
         Log.d("Tree", "Tree() " + posX + " " + posY + " " + posZ);
-        initVertex(posX, posY, posZ);
+        this.posX = posX;
+        this.posY = posY;
+        this.posZ = posZ;
+        initVertex();
         initTexture();
         initShader();
     }
 
-    private void initVertex(float posX, float posY, float posZ) {
+    private void initVertex() {
         vertexCount = 4;
-        float[] vertex = new float[] {
-                0.4f * UNIT_SIZE + posX, 0f + posY, posZ,
-                -0.4f * UNIT_SIZE + posX, 0f + posY, posZ,
-                0.4f * UNIT_SIZE + posX, 1f * UNIT_SIZE + posY, posZ,
-                -0.4f * UNIT_SIZE + posX, 1f * UNIT_SIZE + posY, posZ
+        float[] vertex = new float[]{
+                0.4f * UNIT_SIZE, 0f, 0,
+                -0.4f * UNIT_SIZE, 0f, 0,
+                0.4f * UNIT_SIZE, 1f * UNIT_SIZE, 0,
+                -0.4f * UNIT_SIZE, 1f * UNIT_SIZE, 0
         };
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
     }
 
     private void initTexture() {
-        float[] texture = new float[] {
+        float[] texture = new float[]{
                 1, 1,
                 0, 1,
                 1, 0,
@@ -83,9 +92,24 @@ public class Tree {
         textureGrassHandle = GLES20.glGetUniformLocation(mProgram, "vTextureCoord");
     }
 
+
+    private void calCameraRotation() {
+        float ocX = posX - MatrixState.cameraLocation[0];
+        float ocZ = posZ - MatrixState.cameraLocation[2];
+        if (ocZ <= 0) {
+            yAngle = (float) Math.toDegrees(Math.atan(ocX / ocZ));
+        } else {
+            yAngle = 180 + (float) Math.toDegrees(Math.atan(ocX / ocZ));
+        }
+    }
+
     public void drawSelf(int textureId) {
         GLES20.glUseProgram(mProgram);
+        calCameraRotation();
 
+        MatrixState.pushMatrix();
+        MatrixState.translate(posX, posY, posZ);
+        MatrixState.rotate(yAngle, 0, 1, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
@@ -99,5 +123,6 @@ public class Tree {
 
         //绘制纹理矩形
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
+        MatrixState.popMatrix();
     }
 }

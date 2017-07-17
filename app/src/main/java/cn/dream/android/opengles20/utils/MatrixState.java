@@ -26,7 +26,7 @@ public class MatrixState {
     static int stackTop = -1;
 
     static ByteBuffer llbb = ByteBuffer.allocateDirect(3 * 4);  // 设置摄像机
-    static float[] cameraLocation = new float[3];               // 摄像机位置
+    public static float[] cameraLocation = new float[3];               // 摄像机位置
     public static FloatBuffer cameraBuffer;
 
     public static void setInitStack() {                 // 获取不变换初始矩阵
