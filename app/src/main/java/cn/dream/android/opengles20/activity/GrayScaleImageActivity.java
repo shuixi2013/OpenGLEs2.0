@@ -21,6 +21,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.Mountain;
+import cn.dream.android.opengles20.shape.SkyDome;
 import cn.dream.android.opengles20.shape.Tree;
 import cn.dream.android.opengles20.utils.Constant;
 import cn.dream.android.opengles20.utils.MatrixState;
@@ -151,6 +152,7 @@ public class GrayScaleImageActivity extends Activity {
         private int[] textureIds;
         private Mountain mountain;
         private Tree tree;
+        private SkyDome skyDome;
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -169,6 +171,7 @@ public class GrayScaleImageActivity extends Activity {
             float tZ = -UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * UNIT_SIZE;
 
             tree = new Tree(tX, tY, tZ);
+            skyDome = new SkyDome(50);
         }
 
         @Override
@@ -181,9 +184,10 @@ public class GrayScaleImageActivity extends Activity {
             MatrixState.setCamera(cx, 3, cz, tx, 1, tz, 0, 1, 0);
             MatrixState.setInitStack();
 
-            textureIds = new int[3];
-            GLES20.glGenTextures(3, textureIds, 0);
-            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds, new int[]{R.mipmap.grass, R.mipmap.rock, R.mipmap.tree});
+            textureIds = new int[4];
+            GLES20.glGenTextures(4, textureIds, 0);
+            ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds,
+                    new int[]{R.mipmap.grass, R.mipmap.rock, R.mipmap.tree, R.mipmap.sky});
         }
 
         @Override
@@ -196,6 +200,8 @@ public class GrayScaleImageActivity extends Activity {
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA); // 设置混合因子
             tree.drawSelf(textureIds[2]);
             GLES20.glDisable(GLES20.GL_BLEND);  // 关闭混合
+
+            skyDome.drawSelf(textureIds[3]);
 
             MatrixState.popMatrix();
         }

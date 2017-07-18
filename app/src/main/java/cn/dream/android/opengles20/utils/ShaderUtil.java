@@ -137,6 +137,9 @@ public class ShaderUtil {
          * 当GL_REPEAT时，texture如果坐标大于１，则会产生图样截取拉伸，
          *      如T=3.3，则拉伸图样T方向最后一个像素至3.3位置
          */
+
+        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);  // 打开自动生成mipmap系列纹理
+
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), bitmapId);    // 图片的宽、高严格来讲是2的倍数
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0); // 实际加载纹理进显存，参数解释：纹理类型；纹理的层次，０表示基本图像，可以理解为直接贴图；；纹理边框尺寸　
         bitmap.recycle();                                       // 加载纹理成功后回收bitmap
