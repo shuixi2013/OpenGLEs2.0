@@ -43,6 +43,8 @@
 
         <activity android:name=".activity.ClipPlaneActivity_" />
 
+        <activity android:name=".activity.WavingFlagActivity_" />
+
     </application>
 
 </manifest>

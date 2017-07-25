@@ -48,7 +48,7 @@ public class Tree {
     private int mProgram;
     private int vertexHandle;
     private int textureHandle;
-    private int textureGrassHandle;
+    private int sTextureHandle;
     private int uMVPMatrixHandle;
 
     private int vertexCount;
@@ -89,7 +89,7 @@ public class Tree {
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoor");
-        textureGrassHandle = GLES20.glGetUniformLocation(mProgram, "vTextureCoord");
+        sTextureHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
     }
 
 
@@ -119,7 +119,7 @@ public class Tree {
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-        GLES20.glUniform1i(textureGrassHandle, 0);       // 使用0号纹理
+        GLES20.glUniform1i(sTextureHandle, 0);       // 使用0号纹理
 
         //绘制纹理矩形
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);

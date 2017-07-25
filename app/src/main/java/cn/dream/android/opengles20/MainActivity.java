@@ -19,6 +19,7 @@ import cn.dream.android.opengles20.activity.StencilActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TextureEarthActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
+import cn.dream.android.opengles20.activity.WavingFlagActivity_;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -74,5 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClipPlane(View view) {
         startActivity(new Intent(this, ClipPlaneActivity_.class));
+    }
+
+    public void onWavingFlag(View view) {
+        startActivity(new Intent(this, WavingFlagActivity_.class));
     }
 }

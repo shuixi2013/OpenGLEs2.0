@@ -130,14 +130,27 @@
         android:textAllCaps="false" />
 
     <Button
-        android:text="ClipPlane"
+        android:id="@+id/button12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/button11"
-        android:layout_toRightOf="@+id/button4"
         android:layout_toEndOf="@+id/button4"
-        android:textAllCaps="false"
+        android:layout_toRightOf="@+id/button4"
         android:onClick="onClipPlane"
-        android:id="@+id/button12" />
+        android:text="ClipPlane"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button12"
+        android:layout_marginLeft="17dp"
+        android:layout_marginStart="17dp"
+        android:layout_toEndOf="@+id/button12"
+        android:layout_toRightOf="@+id/button12"
+        android:onClick="onWavingFlag"
+        android:text="WavingFlag"
+        android:textAllCaps="false" />
 
 </RelativeLayout>

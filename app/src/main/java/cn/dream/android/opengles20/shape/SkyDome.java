@@ -160,12 +160,12 @@ public class SkyDome {
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
 
+        GLES20.glEnableVertexAttribArray(vertexHandle);
+        GLES20.glEnableVertexAttribArray(textureHandle);
+
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);                 // 设置使用的纹理编号
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);      // 绑定纹理id
         GLES20.glUniform1i(sTextureHandle, 0);
-
-        GLES20.glEnableVertexAttribArray(vertexHandle);
-        GLES20.glEnableVertexAttribArray(textureHandle);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
         MatrixState.popMatrix();
