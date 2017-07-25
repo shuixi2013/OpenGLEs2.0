@@ -41,6 +41,8 @@
 
         <activity android:name=".activity.StencilActivity_" />
 
+        <activity android:name=".activity.ClipPlaneActivity_" />
+
     </application>
 
 </manifest>

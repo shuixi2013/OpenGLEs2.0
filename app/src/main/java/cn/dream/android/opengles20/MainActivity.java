@@ -8,6 +8,7 @@ import android.view.View;
 import org.androidannotations.annotations.EActivity;
 
 import cn.dream.android.opengles20.activity.AlphaActivity_;
+import cn.dream.android.opengles20.activity.ClipPlaneActivity_;
 import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
 import cn.dream.android.opengles20.activity.MistActivity_;
@@ -69,5 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onStencil(View view) {
         startActivity(new Intent(this, StencilActivity_.class));
+    }
+
+    public void onClipPlane(View view) {
+        startActivity(new Intent(this, ClipPlaneActivity_.class));
     }
 }
