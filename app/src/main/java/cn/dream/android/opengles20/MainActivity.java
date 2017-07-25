@@ -14,6 +14,7 @@ import cn.dream.android.opengles20.activity.MistActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
 import cn.dream.android.opengles20.activity.ScissorActivity_;
+import cn.dream.android.opengles20.activity.StencilActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TextureEarthActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
@@ -64,5 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAlphaTest(View view) {
         startActivity(new Intent(this, AlphaActivity_.class));
+    }
+
+    public void onStencil(View view) {
+        startActivity(new Intent(this, StencilActivity_.class));
     }
 }

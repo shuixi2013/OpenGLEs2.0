@@ -39,6 +39,8 @@
 
         <activity android:name=".activity.AlphaActivity_" />
 
+        <activity android:name=".activity.StencilActivity_" />
+
     </application>
 
 </manifest>
