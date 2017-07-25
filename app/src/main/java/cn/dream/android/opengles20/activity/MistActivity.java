@@ -1,11 +1,10 @@
-package cn.dream.android.opengles20;
+package cn.dream.android.opengles20.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import org.androidannotations.annotations.EActivity;
@@ -13,8 +12,7 @@ import org.androidannotations.annotations.EActivity;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import cn.dream.android.opengles20.activity.CurveGeometryActivity;
-import cn.dream.android.opengles20.shape.CurveGeometry;
+import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.TextureBall;
 import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;

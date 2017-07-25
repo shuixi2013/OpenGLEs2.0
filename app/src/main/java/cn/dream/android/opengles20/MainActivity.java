@@ -9,6 +9,7 @@ import org.androidannotations.annotations.EActivity;
 
 import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
+import cn.dream.android.opengles20.activity.MistActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
 import cn.dream.android.opengles20.activity.ScissorActivity_;
