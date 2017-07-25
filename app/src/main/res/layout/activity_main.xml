@@ -95,4 +95,15 @@
         android:text="GrayScaleImage"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/button9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/button5"
+        android:layout_toRightOf="@+id/button5"
+        android:text="Scissor"
+        android:onClick="onScissor"
+        android:textAllCaps="false" />
+
 </RelativeLayout>

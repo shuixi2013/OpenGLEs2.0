@@ -35,6 +35,8 @@
 
         <activity android:name=".activity.GrayScaleImageActivity_" />
 
+        <activity android:name=".activity.ScissorActivity_" />
+
     </application>
 
 </manifest>

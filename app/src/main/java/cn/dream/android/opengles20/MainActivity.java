@@ -11,6 +11,7 @@ import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
+import cn.dream.android.opengles20.activity.ScissorActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TextureEarthActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
@@ -53,5 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onGrayScaleImageTest(View view) {
         startActivity(new Intent(this, GrayScaleImageActivity_.class));
+    }
+
+    public void onScissor(View view) {
+        startActivity(new Intent(this, ScissorActivity_.class));
     }
 }
