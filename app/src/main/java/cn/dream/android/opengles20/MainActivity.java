@@ -7,6 +7,7 @@ import android.view.View;
 
 import org.androidannotations.annotations.EActivity;
 
+import cn.dream.android.opengles20.activity.AlphaActivity_;
 import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
 import cn.dream.android.opengles20.activity.MistActivity_;
@@ -59,5 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onScissor(View view) {
         startActivity(new Intent(this, ScissorActivity_.class));
+    }
+
+    public void onAlphaTest(View view) {
+        startActivity(new Intent(this, AlphaActivity_.class));
     }
 }

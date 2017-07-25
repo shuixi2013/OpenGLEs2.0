@@ -37,6 +37,8 @@
 
         <activity android:name=".activity.ScissorActivity_" />
 
+        <activity android:name=".activity.AlphaActivity_" />
+
     </application>
 
 </manifest>

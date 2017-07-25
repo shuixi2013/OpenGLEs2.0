@@ -17,7 +17,20 @@ import cn.dream.android.opengles20.utils.ShaderUtil;
  * TextureSquare
  */
 
-public class TextureSquare {
+public class AlphaSquare {
+
+    public final static String FRAGMENT2_CODE = "precision mediump float;\n" +
+            "uniform  sampler2D sTexture;\n" +                              // 纹理采样器，代表一幅纹理
+            "varying  vec4 vColor;\n" +                                     // 接收从顶点着色器传过来的易变变量
+            "varying  vec2 vTexture;\n" +
+            "void main() {\n" +
+            "   vec4 tempColor = texture2D(sTexture, vTexture);\n" +          // 进行纹理采样
+            "   if(tempColor.a < 0.6) {\n" +
+            "       discard;\n" +
+            "   } else {\n" +
+            "       gl_FragColor = tempColor;\n" +
+            "   }\n" +
+            "}";
 
     private float[] vertex = new float[]{
             0.8f, 0.8f, 0,
@@ -40,8 +53,6 @@ public class TextureSquare {
             0, 1
     };
 
-    private float unit = 1;
-
     private int mProgram;
     private int uMVPMatrixHandle;
     private int vertexHandle;
@@ -54,14 +65,14 @@ public class TextureSquare {
 
     private int[] texturesId = new int[1];
 
-    public TextureSquare(Context context, int id) {
+    public AlphaSquare(Context context, int id) {
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         textureBuffer = BufferUtil.toFloatBuffer(texture);
 //        colorBuffer = BufferUtil.toFloatBuffer(color);
 
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id);    // 图片的宽、高严格来讲是2的倍数
 
-        mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
+        mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, FRAGMENT2_CODE);
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
@@ -100,12 +111,6 @@ public class TextureSquare {
         bitmap.recycle();                                       // 加载纹理成功后回收bitmap
     }
 
-    public void setUnit(float unit) {
-        this.unit = unit;
-        for (int i = 0; i < vertex.length; i++)
-            vertex[i] = vertex[i] * this.unit;
-        vertexBuffer = BufferUtil.toFloatBuffer(vertex);
-    }
 
     public void drawSelf() {
         GLES20.glUseProgram(mProgram);
