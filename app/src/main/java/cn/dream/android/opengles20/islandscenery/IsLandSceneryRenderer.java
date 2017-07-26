@@ -9,11 +9,11 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.dream.android.opengles20.R;
 import cn.dream.android.opengles20.shape.Mountain;
-import cn.dream.android.opengles20.shape.SkyDome;
-import cn.dream.android.opengles20.shape.WavingWater;
 import cn.dream.android.opengles20.utils.Constant;
 import cn.dream.android.opengles20.utils.MatrixState;
 import cn.dream.android.opengles20.utils.ShaderUtil;
+
+import static cn.dream.android.opengles20.utils.Constant.yArray;
 
 /**
  * Created by lgb on 17-7-26.
@@ -24,10 +24,19 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
     private Context context;
 
-    private int[] textureIds;
-    private Mountain mountain;
-    private SkyDome skyDome;
+    public static int[] textureIds = new int[6];
+    private int[] bitmapIds = new int[]{R.mipmap.sand, R.mipmap.grass,
+            R.mipmap.sky2,
+            R.mipmap.ocean_water,
+            R.mipmap.tree_trunk,
+            R.mipmap.tree_leaf
+    };
+
+    private Island island;
+    private IslandSky islandSky;
     private WavingWater wavingWater;
+    private CoconutTree coconutTree;
+    private CoconutTree coconutTree2;
 
     private float rotateValue = 0;
     private float translateValue = 0;
@@ -48,21 +57,35 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0, 0, 0, 1);
-
-        Constant.LAND_HIGHEST = 3;
+        ShaderManager.createAllProgram();
+        Constant.LAND_HIGHEST = 2;
         Constant.LAND_HIGH_ADJUST = 0;
         Constant.yArray = Constant.loadLandforms(context.getResources(), R.mipmap.scale_land2);
-        mountain = new Mountain(Constant.yArray);
-        mountain.setStartDivider(0.5f);
-        mountain.setSpanDivider(1.1f);
+        island = new Island(Constant.yArray, ShaderManager.getIslandProgram());
+        island.setStartDivider(0.3f);
+        island.setSpanDivider(0.8f);
 
-        skyDome = new SkyDome(50);
-        wavingWater = new WavingWater(context, 100, 100, 0.3f, R.mipmap.ocean_water);
+        islandSky = new IslandSky(50, ShaderManager.getIslandSkyProgram());
+
+        wavingWater = new WavingWater(ShaderManager.getWavingWaterProgram(), 100, 100, 0.1f);
         wavingWater.setType(1);
 
-        textureIds = new int[3];
-        GLES20.glGenTextures(3, textureIds, 0);
-        ShaderUtil.bindTextureId(context, textureIds, new int[]{R.mipmap.sand, R.mipmap.grass, R.mipmap.sky2});
+        int posI = Constant.yArray.length / 2;
+        int posJ = Constant.yArray[0].length / 2;
+        float tX = -Mountain.UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * Mountain.UNIT_SIZE;
+        float tY = yArray[posJ][posI];
+        float tZ = -Mountain.UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * Mountain.UNIT_SIZE;
+        coconutTree = new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ);
+
+        posI = Constant.yArray.length / 2 + 5;
+        posJ = Constant.yArray[0].length / 2;
+        tX = -Mountain.UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * Mountain.UNIT_SIZE;
+        tY = yArray[posJ][posI];
+        tZ = -Mountain.UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * Mountain.UNIT_SIZE;
+        coconutTree2 = new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ);
+
+        GLES20.glGenTextures(textureIds.length, textureIds, 0);
+        ShaderUtil.bindTextureId(context, textureIds, bitmapIds);
     }
 
     @Override
@@ -84,9 +107,11 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         MatrixState.pushMatrix();
         MatrixState.translate(0, 0, translateValue);
         MatrixState.rotate(rotateValue, 0, 1, 0);
-        skyDome.drawSelf(textureIds[2]);
-        mountain.drawSelf(textureIds[0], textureIds[1]);
-        wavingWater.drawSelf();
+        island.drawSelf(textureIds[0], textureIds[1]);
+        islandSky.drawSelf(textureIds[2]);
+        wavingWater.drawSelf(textureIds[3]);
+        coconutTree.drawSelf(textureIds[4], textureIds[5]);
+        coconutTree2.drawSelf(textureIds[4], textureIds[5]);
         MatrixState.popMatrix();
     }
 }

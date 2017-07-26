@@ -1,17 +1,12 @@
-package cn.dream.android.opengles20.shape;
+package cn.dream.android.opengles20.islandscenery;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 import android.util.Log;
 
 import java.nio.FloatBuffer;
 
 import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.MatrixState;
-import cn.dream.android.opengles20.utils.ShaderUtil;
 
 
 /**
@@ -83,19 +78,16 @@ public class WavingWater {
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
 
-    private int[] texturesId = new int[1];
     private float currStartAngle;
     private float widthSpan = 3.3f;
     private float yOffSet;
 
-    public WavingWater(Context context, float width, float height, float yOffSet, int id) {
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id);    // 图片的宽、高严格来讲是2的倍数
+    public WavingWater(int mProgram, float width, float height, float yOffSet) {
+        this.mProgram = mProgram;
         this.yOffSet = yOffSet;
         initData(width, height);
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         textureBuffer = BufferUtil.toFloatBuffer(texture);
-
-        mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT2_CODE);
 
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
@@ -103,18 +95,6 @@ public class WavingWater {
         uWidthSpanHandle = GLES20.glGetUniformLocation(mProgram, "uWidthSpan");
         uStartAngleHandle = GLES20.glGetUniformLocation(mProgram, "uStartAngle");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-
-        GLES20.glGenTextures(1, texturesId, 0);                     // 获取产生的纹理id
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[0]);  // 绑定纹理id
-
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);      // 设置MIN时为最近采样方式
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);       // 设置MAG时为线性采样方式
-
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);           // 沿着S轴方向拉伸
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);           // 沿着T轴方向拉伸
-
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0); // 实际加载纹理进显存，参数解释：纹理类型；纹理的层次，０表示基本图像，可以理解为直接贴图；；纹理边框尺寸　
-        bitmap.recycle();                                       // 加载纹理成功后回收bitmap
     }
 
     private void initData(float width, float height) {
@@ -159,6 +139,7 @@ public class WavingWater {
                 vertex[k++] = z2;
             }
         }
+        Log.d(TAG, "initData() vertex vertexCount*3=" + vertexCount * 3 + " k=" + k);
 
         k = 0;
         for (int j = 0; j < hCount; j++) {
@@ -187,7 +168,7 @@ public class WavingWater {
                 texture[k++] = z2;
             }
         }
-        Log.d(TAG, "initData() vertexCount*3=" + vertexCount * 3 + " k=" + k);
+        Log.d(TAG, "initData() texture vertexCount*2=" + vertexCount * 2 + " k=" + k);
     }
 
     public void setWidthSpan(float widthSpan) {
@@ -206,7 +187,7 @@ public class WavingWater {
         this.type = type;
     }
 
-    public void drawSelf() {
+    public void drawSelf(int textureId) {
         GLES20.glUseProgram(mProgram);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glUniform1f(uTypeHandle, type);
@@ -220,7 +201,7 @@ public class WavingWater {
         GLES20.glEnableVertexAttribArray(textureHandle);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);                 // 设置使用的纹理编号
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturesId[0]);  // 绑定纹理id
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);      // 绑定纹理id
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
 
