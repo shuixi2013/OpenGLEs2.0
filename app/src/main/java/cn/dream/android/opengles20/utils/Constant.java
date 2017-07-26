@@ -9,8 +9,8 @@ public class Constant {
 
     public static float[][] yArray;
 
-    public static final float LAND_HIGH_ADJUST = -2f;   // 陆地的高度调整值
-    public static final float LAND_HIGHEST = 20f;       // 陆地最大高差
+    public static float LAND_HIGH_ADJUST = -2f;   // 陆地的高度调整值
+    public static float LAND_HIGHEST = 20f;       // 陆地最大高差
 
     /**
      * 从灰度图片中加载陆地上每个顶点的高度

@@ -161,7 +161,7 @@ public class GrayScaleImageActivity extends Activity {
             GLES20.glClearColor(0, 0, 0, 1);
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-            Constant.yArray = Constant.loadLandforms(getResources(), R.mipmap.land);    // 将灰度图写入一个float数组中
+            Constant.yArray = Constant.loadLandforms(getResources(), R.mipmap.scale_land1);    // 将灰度图写入一个float数组中
             mountain = new Mountain(Constant.yArray);
 
             int posI = Constant.yArray.length / 2;

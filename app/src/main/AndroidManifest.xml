@@ -45,6 +45,8 @@
 
         <activity android:name=".activity.WavingFlagActivity_" />
 
+        <activity android:name=".islandscenery.IsLandSceneryActivity_" />
+
     </application>
 
 </manifest>

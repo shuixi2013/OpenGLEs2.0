@@ -35,18 +35,20 @@ public class Mountain {
     private final static String FRAGMENT_CODE = "precision mediump float;\n" +
             "varying vec2 vTextureCoord;\n" +                               //接收从顶点着色器过来的参数
             "varying float currY;\n" + 								        //接收从顶点着色器过来的Y坐标
+            "uniform float startDivider;\n" +
+            "uniform float spanDivider;" +
             "uniform sampler2D sTexture;\n" +                               //草地纹理内容数据
             "uniform sampler2D sTexture2;\n" +                              //岩石纹理内容数据
             "void main() {\n" +
             "   vec4 grass = texture2D(sTexture, vTextureCoord);\n" +     //给此片元从纹理中采样出颜色值
             "   vec4 rock = texture2D(sTexture2, vTextureCoord);\n" +
             "   vec4 finalColor;\n" +
-            "   if(currY < 2.0) {\n" +
+            "   if(currY < startDivider) {\n" +
             "       finalColor = grass;\n" +    //当片元Y坐标小于过程纹理起始Y坐标时采用草皮纹理
-            "   } else if(currY > 10.0) {\n" +
+            "   } else if(currY > (startDivider + spanDivider)) {\n" +
             "       finalColor = rock;\n" +     //当片元Y坐标大于过程纹理起始Y坐标加跨度时采用岩石纹理
             "   } else {\n" +
-            "       float currYRatio = (currY - 2.0) / 8.0;\n" + //计算岩石纹理所占的百分比
+            "       float currYRatio = (currY - startDivider) / spanDivider;\n" + //计算岩石纹理所占的百分比
             "       finalColor = currYRatio * rock + (1.0 - currYRatio) * grass;\n" + //将岩石、草皮纹理颜色按比例混合
             "   }\n" +
             "   gl_FragColor = finalColor;\n" +
@@ -60,9 +62,14 @@ public class Mountain {
     private int textureHandle;
     private int textureGrassHandle;
     private int textureRockHandle;
+    private int startDividerHandle;
+    private int spanDividerHandle;
     private int uMVPMatrixHandle;
 
     private int vertexCount;
+
+    private float startDivider = 2;
+    private float spanDivider = 8;
 
     public Mountain(float[][] data) {
         initVertex(data);
@@ -147,19 +154,31 @@ public class Mountain {
     }
 
     private void initShader() {
-
         mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoor");
         textureGrassHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
         textureRockHandle = GLES20.glGetUniformLocation(mProgram, "sTexture2");
+        startDividerHandle = GLES20.glGetUniformLocation(mProgram, "startDivider");
+        spanDividerHandle = GLES20.glGetUniformLocation(mProgram, "spanDivider");
+    }
+
+    public void setStartDivider(float startDivider) {
+        this.startDivider = startDivider;
+    }
+
+    public void setSpanDivider(float spanDivider) {
+        this.spanDivider = spanDivider;
     }
 
     public void drawSelf(int textureId0, int textureId1) {
         GLES20.glUseProgram(mProgram);
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
+        GLES20.glUniform1f(startDividerHandle, startDivider);
+        GLES20.glUniform1f(spanDividerHandle, startDivider);
+
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
 

@@ -153,4 +153,16 @@
         android:text="WavingFlag"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/button14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/button11"
+        android:layout_marginTop="13dp"
+        android:onClick="onIsLandScenery"
+        android:text="IslandScenery"
+        android:textAllCaps="false" />
+
 </RelativeLayout>

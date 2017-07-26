@@ -20,6 +20,7 @@ import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TextureEarthActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
 import cn.dream.android.opengles20.activity.WavingFlagActivity_;
+import cn.dream.android.opengles20.islandscenery.IsLandSceneryActivity_;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -79,5 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onWavingFlag(View view) {
         startActivity(new Intent(this, WavingFlagActivity_.class));
+    }
+
+    public void onIsLandScenery(View view) {
+        startActivity(new Intent(this, IsLandSceneryActivity_.class));
     }
 }
