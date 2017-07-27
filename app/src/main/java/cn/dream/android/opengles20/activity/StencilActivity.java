@@ -83,7 +83,10 @@ public class StencilActivity extends Activity {
             GLES20.glStencilOp(GLES20.GL_KEEP, GLES20.GL_KEEP, GLES20.GL_KEEP);
             MatrixState.pushMatrix();
             MatrixState.translate(0, -vStep, 0);
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA,GLES20.GL_ONE_MINUS_SRC_ALPHA);
             textureBall.drawSelf();         //绘制镜像体
+            GLES20.glDisable(GLES20.GL_BLEND);
             MatrixState.popMatrix();
 
             GLES20.glDisable(GLES20.GL_STENCIL_TEST);
@@ -95,7 +98,10 @@ public class StencilActivity extends Activity {
             MatrixState.translate(0, 1, 0);
             MatrixState.pushMatrix();
             MatrixState.translate(0, vStep + 0.5f, 0);
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA,GLES20.GL_ONE_MINUS_SRC_ALPHA);
             textureBall.drawSelf();         //绘制目标体
+            GLES20.glDisable(GLES20.GL_BLEND);
             MatrixState.popMatrix();
 
             MatrixState.popMatrix();
