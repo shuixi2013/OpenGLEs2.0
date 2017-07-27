@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -57,7 +56,7 @@ public class SSViewPortActivity extends Activity {
                     isTouch = false;
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     isTouch = screenButton.checkIsClick(event);
-                    Log.e(TAG, "isTouch=" + isTouch);
+                    //Log.e(TAG, "isTouch=" + isTouch);
                 }
                 return true;
             }
@@ -151,7 +150,7 @@ public class SSViewPortActivity extends Activity {
         }
 
         public boolean checkIsClick(MotionEvent event) {
-            Log.e(TAG, rect.toString() + "  " + (int) event.getX() + " " + (int) event.getY());
+            //Log.e(TAG, rect.toString() + "  " + (int) event.getX() + " " + (int) event.getY());
             return rect.contains((int) event.getX(), (int) event.getY());
         }
     }

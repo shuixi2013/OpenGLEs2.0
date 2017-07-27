@@ -35,21 +35,20 @@ public class SkyDome {
     private FloatBuffer textureBuffer;
 
 
-    public SkyDome(float radios) {
+    public SkyDome(int mProgram, float radios) {
         long time = System.currentTimeMillis();
+        this.mProgram = mProgram;
         initVertex(radios);
         Log.e(TAG, "TextureBall() initVertex take time =" + (System.currentTimeMillis() - time));
 
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
         textureBuffer = BufferUtil.toFloatBuffer(texture);
 
-        initProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
+        initProgram();
         Log.e(TAG, "TextureBall() end");
     }
 
-    public void initProgram(String vertexCode, String fragCode) {
-        mProgram = ShaderUtil.createProgram(vertexCode, fragCode);
-
+    public void initProgram() {
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");

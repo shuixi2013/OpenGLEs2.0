@@ -7,7 +7,6 @@ import java.nio.FloatBuffer;
 
 import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.MatrixState;
-import cn.dream.android.opengles20.utils.ShaderUtil;
 
 /**
  * Created by lgb on 17-7-13.
@@ -20,7 +19,7 @@ public class Tree {
 
     private final static float UNIT_SIZE = 3.0f;
 
-    private final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" +    //总变换矩阵
+    public final static String VERTEX_CODE = "uniform mat4 uMVPMatrix;\n" +    //总变换矩阵
             "attribute vec3 aPosition;\n" +                                     //顶点位置
             "attribute vec2 aTexCoor;\n" +                                      //顶点纹理坐标
             "varying vec2 vTextureCoord;\n" +                                   //用于传递给片元着色器的变量
@@ -29,7 +28,7 @@ public class Tree {
             "   vTextureCoord = aTexCoor;\n" +                                  //将接收的纹理坐标传递给片元着色器
             "}";
 
-    private final static String FRAGMENT_CODE = "precision mediump float;\n" +
+    public final static String FRAGMENT_CODE = "precision mediump float;\n" +
             "varying vec2 vTextureCoord;\n" +                               //接收从顶点着色器过来的参数
             "uniform sampler2D sTexture;\n" +                               //纹理内容数据
             "void main() {\n" +
@@ -53,8 +52,9 @@ public class Tree {
 
     private int vertexCount;
 
-    public Tree(float posX, float posY, float posZ) {
+    public Tree(int mProgram, float posX, float posY, float posZ) {
         Log.d("Tree", "Tree() " + posX + " " + posY + " " + posZ);
+        this.mProgram = mProgram;
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
@@ -85,7 +85,7 @@ public class Tree {
     }
 
     private void initShader() {
-        mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
+        //mProgram = ShaderUtil.createProgram(VERTEX_CODE, FRAGMENT_CODE);
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoor");

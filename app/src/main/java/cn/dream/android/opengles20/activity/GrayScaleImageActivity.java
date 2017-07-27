@@ -150,6 +150,7 @@ public class GrayScaleImageActivity extends Activity {
         private final String TAG = MountainsRenderer.class.getSimpleName();
 
         private int[] textureIds;
+        private int[] mPrograms = new int[3];
         private Mountain mountain;
         private Tree tree;
         private SkyDome skyDome;
@@ -157,21 +158,7 @@ public class GrayScaleImageActivity extends Activity {
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
             Log.d(TAG, "onSurfaceCreated()");
-
             GLES20.glClearColor(0, 0, 0, 1);
-            GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-
-            Constant.yArray = Constant.loadLandforms(getResources(), R.mipmap.scale_land1);    // 将灰度图写入一个float数组中
-            mountain = new Mountain(Constant.yArray);
-
-            int posI = Constant.yArray.length / 2;
-            int posJ = Constant.yArray[0].length / 2;
-            float tX = -UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * UNIT_SIZE;
-            float tY = yArray[posJ][posI];
-            float tZ = -UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * UNIT_SIZE;
-
-            tree = new Tree(tX, tY, tZ);
-            skyDome = new SkyDome(50);
         }
 
         @Override
@@ -184,10 +171,28 @@ public class GrayScaleImageActivity extends Activity {
             MatrixState.setCamera(cx, 3, cz, tx, 1, tz, 0, 1, 0);
             MatrixState.setInitStack();
 
+            mPrograms[0] = ShaderUtil.createProgram(Mountain.VERTEX_CODE, Mountain.FRAGMENT_CODE);
+            mPrograms[1] = ShaderUtil.createProgram(Tree.VERTEX_CODE, Tree.FRAGMENT_CODE);
+            mPrograms[2] = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
+
             textureIds = new int[4];
             GLES20.glGenTextures(4, textureIds, 0);
             ShaderUtil.bindTextureId(GrayScaleImageActivity.this, textureIds,
                     new int[]{R.mipmap.grass, R.mipmap.rock, R.mipmap.tree, R.mipmap.sky});
+
+            Constant.yArray = Constant.loadLandforms(getResources(), R.mipmap.scale_land1);    // 将灰度图写入一个float数组中
+            mountain = new Mountain(mPrograms[0], Constant.yArray);
+
+            int posI = Constant.yArray.length / 2;
+            int posJ = Constant.yArray[0].length / 2;
+            float tX = -UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * UNIT_SIZE;
+            float tY = yArray[posJ][posI];
+            float tZ = -UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * UNIT_SIZE;
+
+            tree = new Tree(mPrograms[1], tX, tY, tZ);
+            skyDome = new SkyDome(mPrograms[2], 50);
+
+            GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         }
 
         @Override
