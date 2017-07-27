@@ -72,16 +72,16 @@ public class IsLandSceneryActivity extends Activity {
             return;
         switch (direction) {
             case 0:
-                glView.getRenderer().addRotateValue(2);
-                break;
-            case 1:
-                glView.getRenderer().addRotateValue(-2);
-                break;
-            case 2:
                 glView.getRenderer().addTranslateValue(true);
                 break;
-            case 3:
+            case 1:
                 glView.getRenderer().addTranslateValue(false);
+                break;
+            case 2:
+                glView.getRenderer().addRotateValue(-2);
+                break;
+            case 3:
+                glView.getRenderer().addRotateValue(2);
                 break;
             default:
                 direction = -1;

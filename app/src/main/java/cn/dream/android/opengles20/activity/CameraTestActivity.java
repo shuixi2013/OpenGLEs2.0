@@ -87,21 +87,21 @@ public class CameraTestActivity extends Activity {
             return;
         switch (direction) {
             case 0:     // 前进
-                cx -= 0.2 * Math.sin(radians);
+                cx += 0.2 * Math.sin(radians);
                 cz -= 0.2 * Math.cos(radians);
                 break;
             case 1:     // 后退
-                cx += 0.2 * Math.sin(radians);
+                cx -= 0.2 * Math.sin(radians);
                 cz += 0.2 * Math.cos(radians);
                 break;
             case 2:     // 左旋
-                radians += Math.PI / 50;
-                tx = (float) (cx - ctLength * Math.sin(radians));
+                radians -= Math.PI / 50;
+                tx = (float) (cx + ctLength * Math.sin(radians));
                 tz = (float) (cz - ctLength * Math.cos(radians));
                 break;
             case 3:     // 右旋
-                radians -= Math.PI / 50;
-                tx = (float) (cx - ctLength * Math.sin(radians));
+                radians += Math.PI / 50;
+                tx = (float) (cx + ctLength * Math.sin(radians));
                 tz = (float) (cz - ctLength * Math.cos(radians));
                 break;
             default:

@@ -58,7 +58,7 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
     public void addRotateValue(float rotateValue) {
         this.rotateValue += rotateValue;
-        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
+        tx = (float) (cx + Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
         tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点z坐标
         MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
     }
@@ -66,13 +66,13 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
     public void addTranslateValue(boolean isForward) {
         if (isForward) {
             cx += (float) (0.2 * Math.sin(Math.toRadians(this.rotateValue)));
-            cz += (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
+            cz -= (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
         } else {
             cx -= (float) (0.2 * Math.sin(Math.toRadians(this.rotateValue)));
-            cz -= (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
+            cz += (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
         }
 
-        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
+        tx = (float) (cx + Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
         tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点z坐标
         MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
     }
