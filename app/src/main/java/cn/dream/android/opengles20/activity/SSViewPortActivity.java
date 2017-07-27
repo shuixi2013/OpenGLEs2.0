@@ -1,9 +1,11 @@
 package cn.dream.android.opengles20.activity;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -31,8 +33,11 @@ public class SSViewPortActivity extends Activity {
 
 
     private GLSurfaceView glSurfaceView;
-
     private int[] texturesId;
+
+    private int viewPortHeight;
+
+    private ScreenButton screenButton;
     private boolean isTouch;
 
     @Override
@@ -51,7 +56,8 @@ public class SSViewPortActivity extends Activity {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     isTouch = false;
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    isTouch = true;
+                    isTouch = screenButton.checkIsClick(event);
+                    Log.e(TAG, "isTouch=" + isTouch);
                 }
                 return true;
             }
@@ -60,9 +66,6 @@ public class SSViewPortActivity extends Activity {
 
 
     class SSViewPortRenderer implements GLSurfaceView.Renderer {
-
-        private ScreenButton screenButton;
-
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
             GLES20.glClearColor(0, 0, 0, 1);
@@ -71,6 +74,7 @@ public class SSViewPortActivity extends Activity {
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height) {
             GLES20.glViewport(0, 0, width, height);
+            viewPortHeight = height;
             MatrixState.setProjectOrtho(0, width, 0, height, 2, 100);
             MatrixState.setCamera(0, 0, 3, 0, 0, 0, 0, 1, 0);
             MatrixState.setInitStack();
@@ -86,20 +90,17 @@ public class SSViewPortActivity extends Activity {
         public void onDrawFrame(GL10 gl) {
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
-            /*if (isTouch)
+            if (isTouch)
                 screenButton.drawSelf(texturesId[1]);
-            else screenButton.drawSelf(texturesId[0]);*/
+            else screenButton.drawSelf(texturesId[0]);
         }
     }
 
     class ScreenButton {
 
-        private float[] vertex = new float[]{
-                0, 0, 0,
-                200, 0, 0,
-                0, 100, 0,
-                200, 100, 0
-        };
+        private Rect rect;
+
+        private float[] vertex ;
 
         private float[] texture = new float[]{
                 0,1,
@@ -117,10 +118,17 @@ public class SSViewPortActivity extends Activity {
         private FloatBuffer textureBuffer;
 
         public ScreenButton() {
-            mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
+            rect = new Rect(100, 80, 300, 200);
+            vertex = new float[]{
+                    rect.left, viewPortHeight - rect.bottom, 0,
+                    rect.right, viewPortHeight - rect.bottom, 0,
+                    rect.left, viewPortHeight - rect.top, 0,
+                    rect.right, viewPortHeight - rect.top, 0
+            };
             vertexBuffer = BufferUtil.toFloatBuffer(vertex);
             textureBuffer = BufferUtil.toFloatBuffer(texture);
 
+            mProgram = ShaderUtil.createProgram(ShaderUtil.VERTEX_CODE, ShaderUtil.FRAGMENT2_CODE);
             vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
             textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
             uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
@@ -140,6 +148,11 @@ public class SSViewPortActivity extends Activity {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);      // 绑定纹理id
 
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        }
+
+        public boolean checkIsClick(MotionEvent event) {
+            Log.e(TAG, rect.toString() + "  " + (int) event.getX() + " " + (int) event.getY());
+            return rect.contains((int) event.getX(), (int) event.getY());
         }
     }
 }
