@@ -19,6 +19,7 @@ public class IsLandSceneryActivity extends Activity {
 
     private int direction = -1;
     private IsLandSceneryGLView glView;
+    private IsLandSceneryRenderer renderer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,13 @@ public class IsLandSceneryActivity extends Activity {
         setContentView(glView);
     }
 
-    class IsLandSceneryGLView extends GLSurfaceView {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        renderer.onDestroy();
+    }
 
-        private IsLandSceneryRenderer renderer;
+    class IsLandSceneryGLView extends GLSurfaceView {
 
         public IsLandSceneryGLView(Context context) {
             super(context);

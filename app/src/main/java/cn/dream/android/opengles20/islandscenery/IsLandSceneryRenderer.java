@@ -51,6 +51,13 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
     private float ty = 1;
     private float tz;
 
+    private final static float MAX_WIND_FORCE = 15;
+    private final static float MIN_WIND_FORCE = 5;
+    public static float windForce = MIN_WIND_FORCE;
+    private boolean openWind = false;
+    private boolean windFlag;
+    public static float windAngle = (float) (Math.PI / 2);
+
     public IsLandSceneryRenderer(Context context) {
         this.context = context;
     }
@@ -110,6 +117,32 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glGenTextures(textureIds.length, textureIds, 0);
         ShaderUtil.bindTextureId(context, textureIds, bitmapIds);
+
+        startWindThread();
+    }
+
+    private void startWindThread() {
+        openWind  = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                openWind = true;
+                while (openWind) {
+                    if (windForce > MAX_WIND_FORCE)
+                        windFlag = true;
+                    if (windForce <= MIN_WIND_FORCE)
+                        windFlag = false;
+                    if (windFlag)
+                        windForce -= 0.3;
+                    else windForce += 0.3;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -143,5 +176,10 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         GLES20.glDisable(GLES20.GL_BLEND);
 
         MatrixState.popMatrix();
+    }
+
+
+    public void onDestroy() {
+        openWind = false;
     }
 }

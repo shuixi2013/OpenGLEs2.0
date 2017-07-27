@@ -1,6 +1,7 @@
 package cn.dream.android.opengles20.islandscenery;
 
 import android.opengl.GLES20;
+import android.support.annotation.NonNull;
 
 import java.nio.FloatBuffer;
 
@@ -29,6 +30,8 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
     private int vertexHandle;
     private int textureHandle;
     private int sTextureHandle;
+    private int windForceHandle;
+    private int windAngleHandle;
     private int uMVPMatrixHandle;
 
     private float centerX, centerY, centerZ;    // 实际位置中的贴图的中心点
@@ -43,6 +46,8 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
         vertexHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(mProgram, "aTexture");
         sTextureHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
+        windAngleHandle = GLES20.glGetUniformLocation(this.mProgram, "windAngle");
+        windForceHandle = GLES20.glGetUniformLocation(this.mProgram, "windForce");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
     }
 
@@ -62,15 +67,15 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
             vertex[i + 2] = (float) (vertex[i] * Math.sin(Math.toRadians(xzAngle)));
         }
 
-        float xSum = 0, ySum = 0, zSum = 0;
+//        float xSum = 0, ySum = 0, zSum = 0;
         for (int i = 0; i < vertexCount * 3; i = i + 3) {   // 树叶移至制定位置
             vertex[i] += posX;
             vertex[i + 1] += posY;
             vertex[i + 2] += posZ;
 
-            xSum += vertex[i];
-            ySum += vertex[i + 1];
-            zSum += vertex[i + 2];
+//            xSum += vertex[i];
+//            ySum += vertex[i + 1];
+//            zSum += vertex[i + 2];
         }
 
         centerX = vertex[vertex.length - 3];
@@ -88,6 +93,8 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
     public void drawSelf(int textureId) {
         GLES20.glUseProgram(mProgram);
 
+        GLES20.glUniform1f(windAngleHandle, IsLandSceneryRenderer.windAngle);
+        GLES20.glUniform1f(windForceHandle, IsLandSceneryRenderer.windForce);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
@@ -103,7 +110,7 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
     }
 
     @Override
-    public int compareTo(CoconutLeaf o) {   // 忽略ｙ轴上的距离计算
+    public int compareTo(@NonNull CoconutLeaf o) {   // 忽略ｙ轴上的距离计算
         float thisDistance2 = (centerX - IsLandSceneryRenderer.cx) * (centerX - IsLandSceneryRenderer.cx)
                 + (centerZ - IsLandSceneryRenderer.cz) * (centerZ - IsLandSceneryRenderer.cz);
         float oDistance2 = (o.centerX - IsLandSceneryRenderer.cx) * (o.centerX - IsLandSceneryRenderer.cx)

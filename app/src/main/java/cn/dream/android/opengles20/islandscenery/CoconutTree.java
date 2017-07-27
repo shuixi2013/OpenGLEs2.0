@@ -25,8 +25,15 @@ public class CoconutTree implements Comparable<CoconutTree>{
             "attribute vec3 aPosition;\n" +                                 // 顶点位置
             "attribute vec2 aTexture;\n" +                                  // 顶点纹理
             "varying  vec2 vTexture;\n" +
+            "uniform float windForce;\n" +                                  // 风的大小，应为动态改变
+            "uniform float windAngle;\n" +                                  // 风的角度，即风向
             "void main() {\n" +
-            "   gl_Position = uMVPMatrix * vec4(aPosition, 1);\n" +         // 根据总变换矩阵计算此次绘制顶点的位置
+            "   vec3 tempPosition = aPosition;\n" +
+            "   float tempResult = windForce - windForce * cos(tempPosition.y / windForce);\n" +
+            "   tempPosition.x = tempPosition.x + tempResult * sin(windAngle);\n" +
+            "   tempPosition.y = windForce * sin(tempPosition.y / windForce);\n" +
+            "   tempPosition.z = tempPosition.z + tempResult * cos(windAngle);\n" +
+            "   gl_Position = uMVPMatrix * vec4(tempPosition, 1);\n" +      // 根据总变换矩阵计算此次绘制顶点的位置
             "   vTexture = aTexture;\n" +
             "}";
 
@@ -50,6 +57,8 @@ public class CoconutTree implements Comparable<CoconutTree>{
     private int vertexHandle;
     private int textureHandle;
     private int sTextureHandle;
+    private int windForceHandle;
+    private int windAngleHandle;
     private int uMVPMatrixHandle;
 
     private float[] topValue = new float[3];
@@ -75,6 +84,8 @@ public class CoconutTree implements Comparable<CoconutTree>{
         vertexHandle = GLES20.glGetAttribLocation(this.mProgram, "aPosition");
         textureHandle = GLES20.glGetAttribLocation(this.mProgram, "aTexture");
         sTextureHandle = GLES20.glGetUniformLocation(this.mProgram, "sTexture");
+        windAngleHandle = GLES20.glGetUniformLocation(this.mProgram, "windAngle");
+        windForceHandle = GLES20.glGetUniformLocation(this.mProgram, "windForce");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(this.mProgram, "uMVPMatrix");
 
         coconutLeafs = new ArrayList<>();
@@ -196,6 +207,8 @@ public class CoconutTree implements Comparable<CoconutTree>{
     public void drawSelf(int textureId, int textureId2) {
         GLES20.glUseProgram(mProgram);
 
+        GLES20.glUniform1f(windAngleHandle, IsLandSceneryRenderer.windAngle);
+        GLES20.glUniform1f(windForceHandle, IsLandSceneryRenderer.windForce);
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
