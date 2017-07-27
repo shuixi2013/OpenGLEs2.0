@@ -47,6 +47,8 @@
 
         <activity android:name=".islandscenery.IsLandSceneryActivity_" />
 
+        <activity android:name=".activity.CameraTestActivity_" />
+
     </application>
 
 </manifest>

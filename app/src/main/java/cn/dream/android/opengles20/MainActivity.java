@@ -8,6 +8,7 @@ import android.view.View;
 import org.androidannotations.annotations.EActivity;
 
 import cn.dream.android.opengles20.activity.AlphaActivity_;
+import cn.dream.android.opengles20.activity.CameraTestActivity_;
 import cn.dream.android.opengles20.activity.ClipPlaneActivity_;
 import cn.dream.android.opengles20.activity.CurveGeometryActivity_;
 import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
@@ -84,5 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onIsLandScenery(View view) {
         startActivity(new Intent(this, IsLandSceneryActivity_.class));
+    }
+
+    public void onCameraTest(View view) {
+        startActivity(new Intent(this, CameraTestActivity_.class));
     }
 }

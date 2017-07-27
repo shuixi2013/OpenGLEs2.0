@@ -165,4 +165,15 @@
         android:text="IslandScenery"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/button15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button14"
+        android:layout_toEndOf="@+id/button8"
+        android:layout_toRightOf="@+id/button8"
+        android:onClick="onCameraTest"
+        android:text="CameraTest"
+        android:textAllCaps="false" />
+
 </RelativeLayout>
