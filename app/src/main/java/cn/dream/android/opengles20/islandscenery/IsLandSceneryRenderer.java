@@ -39,7 +39,15 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
     private CoconutTree coconutTree2;
 
     private float rotateValue = 0;
-    private float translateValue = 0;
+    private float translateValue;
+
+    private float cx = 0;
+    private float cy = 5;
+    private float cz = 13;
+
+    private float tx;
+    private float ty = 1;
+    private float tz;
 
     public IsLandSceneryRenderer(Context context) {
         this.context = context;
@@ -48,10 +56,23 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
     public void addRotateValue(float rotateValue) {
         this.rotateValue += rotateValue;
+        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 12);       // 观察目标点x坐标
+        tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 12);       // 观察目标点z坐标
+        MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
     }
 
-    public void addTranslateValue(float translateValue) {
-        this.translateValue += translateValue;
+    public void addTranslateValue(boolean isForward) {
+        if (isForward) {
+            cx += (float) (0.2 * Math.sin(Math.toRadians(this.rotateValue)));
+            cz += (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
+        } else {
+            cx -= (float) (0.2 * Math.sin(Math.toRadians(this.rotateValue)));
+            cz -= (float) (0.2 * Math.cos(Math.toRadians(this.rotateValue)));
+        }
+
+        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
+        tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点z坐标
+        MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
     }
 
     @Override
@@ -63,7 +84,7 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         Constant.yArray = Constant.loadLandforms(context.getResources(), R.mipmap.scale_land2);
         island = new Island(Constant.yArray, ShaderManager.getIslandProgram());
         island.setStartDivider(0.3f);
-        island.setSpanDivider(0.8f);
+        island.setSpanDivider(0.3f);
 
         islandSky = new IslandSky(50, ShaderManager.getIslandSkyProgram());
 
@@ -93,7 +114,7 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
         MatrixState.setProjectFrustum(-ratio, ratio, -1, 1, 2, 100);
-        MatrixState.setCamera(0, 5, 13, 0, 0, 0, 0, 1, 0);
+        MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
         MatrixState.setSunLightPosition(200, 50, -50);
         MatrixState.setInitStack();
 
@@ -105,8 +126,8 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         MatrixState.pushMatrix();
-        MatrixState.translate(0, 0, translateValue);
-        MatrixState.rotate(rotateValue, 0, 1, 0);
+        //MatrixState.translate(0, 0, translateValue);
+        //MatrixState.rotate(rotateValue, 0, 1, 0);
         island.drawSelf(textureIds[0], textureIds[1]);
         islandSky.drawSelf(textureIds[2]);
         wavingWater.drawSelf(textureIds[3]);
