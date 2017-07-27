@@ -8,7 +8,7 @@ import cn.dream.android.opengles20.utils.ShaderUtil;
  */
 
 public class ShaderManager {
-    private static final int codeCount = 5;
+    private static final int codeCount = 6;
 
     private static int[] mProgram = new int[codeCount];
     private static String[] vertexCodes = new String[]{
@@ -16,14 +16,16 @@ public class ShaderManager {
             ShaderUtil.VERTEX_CODE,
             WavingWater.VERTEX_CODE,
             CoconutTree.VERTEX_CODE,
-            CoconutTree.VERTEX_CODE
+            CoconutTree.VERTEX_CODE,
+            ShaderUtil.VERTEX_CODE
     };
     private static String[] fragCodes = new String[]{
             Island.FRAGMENT_CODE,
             ShaderUtil.FRAGMENT2_CODE,
             WavingWater.FRAGMENT2_CODE,
             CoconutTree.FRAGMENT_CODE,
-            CoconutTree.FRAGMENT_CODE
+            CoconutTree.FRAGMENT_CODE,
+            ShaderUtil.FRAGMENT2_CODE
     };
 
     public static void createAllProgram() {
@@ -50,5 +52,9 @@ public class ShaderManager {
 
     public static int getCoconutLeafProgram() {
         return mProgram[4];
+    }
+
+    public static int getReptileProgram() {
+        return mProgram[5];
     }
 }

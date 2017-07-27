@@ -28,18 +28,20 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
     private Context context;
 
-    public static int[] textureIds = new int[6];
+    public static int[] textureIds = new int[7];
     private int[] bitmapIds = new int[]{R.mipmap.sand, R.mipmap.grass,
             R.mipmap.sky2,
             R.mipmap.ocean_water,
             R.mipmap.tree_trunk,
-            R.mipmap.tree_leaf
+            R.mipmap.tree_leaf,
+            R.mipmap.ic_launcher
     };
 
     private Island island;
     private IslandSky islandSky;
     private WavingWater wavingWater;
     private List<CoconutTree> coconutTrees;
+    private Reptile androidReptile;
 
     private float rotateValue = 0;
 
@@ -119,6 +121,8 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         ShaderUtil.bindTextureId(context, textureIds, bitmapIds);
 
         startWindThread();
+
+        androidReptile = new Reptile(ShaderManager.getReptileProgram(), 1, 13, 25);
     }
 
     private void startWindThread() {
@@ -175,11 +179,14 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
             tree.drawSelf(textureIds[4], textureIds[5]);
         GLES20.glDisable(GLES20.GL_BLEND);
 
+        androidReptile.drawSelf(textureIds[6]);
+
         MatrixState.popMatrix();
     }
 
 
     public void onDestroy() {
         openWind = false;
+        androidReptile.onDestroy();
     }
 }
