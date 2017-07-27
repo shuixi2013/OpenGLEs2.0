@@ -15,6 +15,7 @@ import cn.dream.android.opengles20.activity.GrayScaleImageActivity_;
 import cn.dream.android.opengles20.activity.MistActivity_;
 import cn.dream.android.opengles20.activity.PlaneActivity_;
 import cn.dream.android.opengles20.activity.PolyhetronActivity_;
+import cn.dream.android.opengles20.activity.SSViewPortActivity_;
 import cn.dream.android.opengles20.activity.ScissorActivity_;
 import cn.dream.android.opengles20.activity.StencilActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
@@ -89,5 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onCameraTest(View view) {
         startActivity(new Intent(this, CameraTestActivity_.class));
+    }
+
+    public void onScreenSizeViewPort(View view) {
+        startActivity(new Intent(this, SSViewPortActivity_.class));
     }
 }

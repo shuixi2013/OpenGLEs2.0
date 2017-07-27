@@ -49,6 +49,8 @@
 
         <activity android:name=".activity.CameraTestActivity_" />
 
+        <activity android:name=".activity.SSViewPortActivity_" />
+
     </application>
 
 </manifest>
