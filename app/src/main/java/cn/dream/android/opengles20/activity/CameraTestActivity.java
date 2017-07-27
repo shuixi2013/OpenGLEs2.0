@@ -95,13 +95,13 @@ public class CameraTestActivity extends Activity {
                 cz += 0.2 * Math.cos(radians);
                 break;
             case 2:     // 左旋
-                radians -= Math.PI / 50;
-                tx = (float) (cx + ctLength * Math.sin(radians));
+                radians += Math.PI / 50;
+                tx = (float) (cx - ctLength * Math.sin(radians));
                 tz = (float) (cz - ctLength * Math.cos(radians));
                 break;
             case 3:     // 右旋
-                radians += Math.PI / 50;
-                tx = (float) (cx + ctLength * Math.sin(radians));
+                radians -= Math.PI / 50;
+                tx = (float) (cx - ctLength * Math.sin(radians));
                 tz = (float) (cz - ctLength * Math.cos(radians));
                 break;
             default:

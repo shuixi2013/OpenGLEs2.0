@@ -31,6 +31,8 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
     private int sTextureHandle;
     private int uMVPMatrixHandle;
 
+    private float centerX, centerY, centerZ;    // 实际位置中的贴图的中心点
+
     public CoconutLeaf(int mProgram, float posX, float posY, float posZ, int xzAngle) {
         initData(posX, posY, posZ, xzAngle);
 
@@ -60,11 +62,21 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
             vertex[i + 2] = (float) (vertex[i] * Math.sin(Math.toRadians(xzAngle)));
         }
 
+        float xSum = 0, ySum = 0, zSum = 0;
         for (int i = 0; i < vertexCount * 3; i = i + 3) {   // 树叶移至制定位置
             vertex[i] += posX;
             vertex[i + 1] += posY;
             vertex[i + 2] += posZ;
+
+            xSum += vertex[i];
+            ySum += vertex[i + 1];
+            zSum += vertex[i + 2];
         }
+
+        centerX = vertex[vertex.length - 3];
+        centerY = vertex[vertex.length - 2];
+        centerZ = vertex[vertex.length - 1];
+
         texture = new float[]{
                 1, 1,
                 0, 1,
@@ -91,7 +103,12 @@ public class CoconutLeaf implements Comparable<CoconutLeaf>{
     }
 
     @Override
-    public int compareTo(CoconutLeaf o) {
-        return 0;
+    public int compareTo(CoconutLeaf o) {   // 忽略ｙ轴上的距离计算
+        float thisDistance2 = (centerX - IsLandSceneryRenderer.cx) * (centerX - IsLandSceneryRenderer.cx)
+                + (centerZ - IsLandSceneryRenderer.cz) * (centerZ - IsLandSceneryRenderer.cz);
+        float oDistance2 = (o.centerX - IsLandSceneryRenderer.cx) * (o.centerX - IsLandSceneryRenderer.cx)
+                + (o.centerZ - IsLandSceneryRenderer.cz) * (o.centerZ - IsLandSceneryRenderer.cz);
+        return thisDistance2 > oDistance2 ? -1 : 1;
     }
+
 }

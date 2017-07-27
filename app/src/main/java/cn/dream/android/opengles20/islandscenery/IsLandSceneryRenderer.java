@@ -4,6 +4,10 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -35,15 +39,13 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
     private Island island;
     private IslandSky islandSky;
     private WavingWater wavingWater;
-    private CoconutTree coconutTree;
-    private CoconutTree coconutTree2;
+    private List<CoconutTree> coconutTrees;
 
     private float rotateValue = 0;
-    private float translateValue;
 
-    private float cx = 0;
-    private float cy = 5;
-    private float cz = 13;
+    public static float cx = 0;
+    public static float cy = 5;
+    public static float cz = 13;
 
     private float tx;
     private float ty = 1;
@@ -56,8 +58,8 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
 
     public void addRotateValue(float rotateValue) {
         this.rotateValue += rotateValue;
-        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 12);       // 观察目标点x坐标
-        tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 12);       // 观察目标点z坐标
+        tx = (float) (cx - Math.sin(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点x坐标
+        tz = (float) (cz - Math.cos(Math.toRadians(this.rotateValue)) * 13);       // 观察目标点z坐标
         MatrixState.setCamera(cx, cy, cz, tx, ty, tz, 0, 1, 0);
     }
 
@@ -96,14 +98,15 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         float tX = -Mountain.UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * Mountain.UNIT_SIZE;
         float tY = yArray[posJ][posI];
         float tZ = -Mountain.UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * Mountain.UNIT_SIZE;
-        coconutTree = new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ);
+        coconutTrees = new ArrayList<>();
+        coconutTrees.add(new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ));
 
         posI = Constant.yArray.length / 2 + 5;
         posJ = Constant.yArray[0].length / 2;
         tX = -Mountain.UNIT_SIZE * (Constant.yArray.length - 1) / 2 + posI * Mountain.UNIT_SIZE;
         tY = yArray[posJ][posI];
         tZ = -Mountain.UNIT_SIZE * (Constant.yArray[0].length - 1) / 2 + posJ * Mountain.UNIT_SIZE;
-        coconutTree2 = new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ);
+        coconutTrees.add(new CoconutTree(ShaderManager.getCoconutTreeProgram(), tX, tY, tZ));
 
         GLES20.glGenTextures(textureIds.length, textureIds, 0);
         ShaderUtil.bindTextureId(context, textureIds, bitmapIds);
@@ -131,8 +134,14 @@ public class IsLandSceneryRenderer implements GLSurfaceView.Renderer {
         island.drawSelf(textureIds[0], textureIds[1]);
         islandSky.drawSelf(textureIds[2]);
         wavingWater.drawSelf(textureIds[3]);
-        coconutTree.drawSelf(textureIds[4], textureIds[5]);
-        coconutTree2.drawSelf(textureIds[4], textureIds[5]);
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        Collections.sort(coconutTrees);
+        for (CoconutTree tree : coconutTrees)
+            tree.drawSelf(textureIds[4], textureIds[5]);
+        GLES20.glDisable(GLES20.GL_BLEND);
+
         MatrixState.popMatrix();
     }
 }

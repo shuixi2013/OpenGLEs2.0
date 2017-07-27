@@ -4,6 +4,9 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import cn.dream.android.opengles20.utils.BufferUtil;
 import cn.dream.android.opengles20.utils.MatrixState;
@@ -14,7 +17,7 @@ import cn.dream.android.opengles20.utils.ShaderUtil;
  * CoconutTree　椰子树
  */
 
-public class CoconutTree {
+public class CoconutTree implements Comparable<CoconutTree>{
 
     private final static String TAG = CoconutTree.class.getSimpleName();
 
@@ -50,12 +53,16 @@ public class CoconutTree {
     private int uMVPMatrixHandle;
 
     private float[] topValue = new float[3];
-    private CoconutLeaf[] coconutLeafs;
+    private List<CoconutLeaf> coconutLeafs;
     private int[] leafAngles = new int[] {0, 45, 58, 90, 120, 170, 230, 250, 280, 300, 330};
 
+    private float posX, posY, posZ;
 
     public CoconutTree(int mProgram, float posX, float posY, float posZ) {
         this.mProgram = mProgram;
+        this.posX = posX;
+        this.posY = posY;
+        this.posZ = posZ;
         initData(posX, posY, posZ);
 
         vertexBuffer = BufferUtil.toFloatBuffer(vertex);
@@ -70,10 +77,10 @@ public class CoconutTree {
         sTextureHandle = GLES20.glGetUniformLocation(this.mProgram, "sTexture");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(this.mProgram, "uMVPMatrix");
 
-        coconutLeafs = new CoconutLeaf[leafAngles.length];
+        coconutLeafs = new ArrayList<>();
         for (int i = 0; i < leafAngles.length; i++) {
-            coconutLeafs[i] = new CoconutLeaf(ShaderManager.getCoconutLeafProgram(),
-                    topValue[0], topValue[1], topValue[2], leafAngles[i]);
+            coconutLeafs.add(new CoconutLeaf(ShaderManager.getCoconutLeafProgram(),
+                    topValue[0], topValue[1], topValue[2], leafAngles[i]));
 
         }
     }
@@ -204,9 +211,19 @@ public class CoconutTree {
 
         GLES20.glEnable(GLES20.GL_BLEND);   // 开启混合
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA); // 设置混合因子
-        for (int i = 0; i < coconutLeafs.length; i++) {
-            coconutLeafs[i].drawSelf(textureId2);
+        Collections.sort(coconutLeafs);
+        for (int i = 0; i < leafAngles.length; i++) {
+            coconutLeafs.get(i).drawSelf(textureId2);
         }
         GLES20.glDisable(GLES20.GL_BLEND);  // 关闭混合
+    }
+
+    @Override
+    public int compareTo(CoconutTree o) {
+        float thisDistance2 = (posX - IsLandSceneryRenderer.cx) * (posX - IsLandSceneryRenderer.cx)
+                + (posZ - IsLandSceneryRenderer.cz) * (posZ - IsLandSceneryRenderer.cz);
+        float oDistance2 = (o.posX - IsLandSceneryRenderer.cx) * (o.posX - IsLandSceneryRenderer.cx)
+                + (o.posZ - IsLandSceneryRenderer.cz) * (o.posZ - IsLandSceneryRenderer.cz);
+        return thisDistance2 > oDistance2 ? -1 : 1;
     }
 }
