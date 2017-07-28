@@ -26,17 +26,24 @@ public class TwistCircle {
             "   float pi = 3.141592653;\n" +
             "   vec3 tempVertex = aVertex;\n" +
             "   float radians = 0.0;\n" +           // 以ｙ轴正半轴为起始边，顺时针角度为正
-            "   if(tempVertex.y == 0.0) {\n" +
-            "       if(tempVertex.x > 0.0)\n" +
-            "           radians = pi / 2.0;\n" +
-            "       else radians = pi * 1.5;\n" +
-            "   } else radians = atan(tempVertex.x, tempVertex.y);\n" +// 计算其他坐标点的旋转角度
-            "   float lRadians;" +
-            "   if(radians >=0.0 && radians < pi * 2.0 / 3.0) {\n" +
+            "   if(tempVertex.x == 0.0 && tempVertex.y == 0.0) {\n" +
+            "   } else  radians = atan(tempVertex.x, tempVertex.y);\n" +    // 计算其他坐标点的旋转角度
+            "   if(radians < 0.0)\n" +
+            "       radians = 2.0 * pi + radians;\n" +
+            "   float lRadians;\n" +
+            "   if(radians >= 0.0 && radians < pi * 2.0 / 3.0) {\n" +
             "       lRadians = radians - pi / 3.0;\n" +
-            "       if(lRadians < 0)\n" +
-            "           lRadians = -lRadians; " +
+            "   } else if(radians >= pi * 2.0 / 3.0 && radians < pi * 4.0 / 3.0) {\n" +
+            "       lRadians = radians - pi;\n" +
+            "   } else {\n" +
+            "       lRadians = radians - pi * 5.0 / 3.0;\n" +
             "   }\n" +
+            "   if(lRadians < 0.0)\n" +
+            "       lRadians = -lRadians;\n" +
+            "   float curRadius = sqrt(tempVertex.x * tempVertex.x + tempVertex.y * tempVertex.y);\n" +
+            "   float length = curRadius / cos(lRadians) - curRadius;\n" +
+            "   tempVertex.x = tempVertex.x + length * sin(radians) * uControl;\n" +
+            "   tempVertex.y = tempVertex.y + length * cos(radians) * uControl;\n" +
             "   gl_Position = uMVPMatrix * vec4(tempVertex, 1);\n" +
             "   vTexture = aTexture;\n" +
             "}";
