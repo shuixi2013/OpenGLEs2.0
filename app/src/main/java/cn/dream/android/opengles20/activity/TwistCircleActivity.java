@@ -159,4 +159,11 @@ public class TwistCircleActivity extends Activity {
 
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (twistCircle != null)
+            twistCircle.onDestroy();
+    }
 }

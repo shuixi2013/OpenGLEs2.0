@@ -21,8 +21,13 @@ public class TwistCircle {
             "attribute vec3 aVertex;\n" +           // 'attribute' :  supported in vertex shaders only
             "attribute vec2 aTexture;\n" +
             "varying vec2 vTexture;\n" +
+            "uniform float uControl;" +
             "void main() {\n" +
-            "   gl_Position = uMVPMatrix * vec4(aVertex, 1);\n" +
+            "   float pi = 3.141592653;\n" +
+            "   vec3 tempVertex = aVertex;\n" +
+            //"   float radians = 0.0;\n" +
+            //"   radians = atan(tempVertex.x, tempVertex.y);\n" +
+            "   gl_Position = uMVPMatrix * vec4(tempVertex, 1);\n" +
             "   vTexture = aTexture;\n" +
             "}";
 
@@ -38,12 +43,17 @@ public class TwistCircle {
 
     private int vertexCount;
 
+    private float uControlLength;
+    private boolean isRun;
+    private boolean uControlFlag;
+
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
 
     private int mProgram;
     private int vertexHandle;
     private int textureHandle;
+    private int uControlHandle;
     private int uMVPMatrixHandle;
 
     public TwistCircle(int mProgram) {
@@ -55,7 +65,38 @@ public class TwistCircle {
 
         vertexHandle = GLES20.glGetAttribLocation(this.mProgram, "aVertex");
         textureHandle = GLES20.glGetAttribLocation(this.mProgram, "aTexture");
+        uControlHandle = GLES20.glGetUniformLocation(this.mProgram, "uControl");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(this.mProgram, "uMVPMatrix");
+
+        startTwistThread();
+    }
+
+    private void startTwistThread() {
+        isRun = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                isRun = true;
+                uControlFlag = false;
+                while (isRun) {
+                    if (uControlFlag)
+                        uControlLength -= 0.05f;
+                    else uControlLength += 0.05f;
+
+                    if (uControlLength > 1)
+                        uControlFlag = true;
+                    if (uControlLength <= 0)
+                        uControlFlag = false;
+
+                    //Log.d(TAG, "startTwistThread() uControlLength=" + uControlLength);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     private void initData() {
@@ -130,10 +171,10 @@ public class TwistCircle {
                 vertex[k++] = 0;
 
                 float divid = layer * layerUnit * 2;
-                float s1 = x1 / divid +  0.5f;
-                float s2 = x2 / divid +  0.5f;
-                float s3 = x3 / divid +  0.5f;
-                float s4 = x4 / divid +  0.5f;
+                float s1 = x1 / divid + 0.5f;
+                float s2 = x2 / divid + 0.5f;
+                float s3 = x3 / divid + 0.5f;
+                float s4 = x4 / divid + 0.5f;
 
                 float t1 = -y1 / divid + 0.5f;
                 float t2 = -y2 / divid + 0.5f;
@@ -160,13 +201,14 @@ public class TwistCircle {
             }
         }
 
-        Log.d(TAG, "initData() time=" + (System.currentTimeMillis() - startTime)+ "  k=" + k + "  vertexCount*3=" + vertexCount * 3);
+        Log.d(TAG, "initData() time=" + (System.currentTimeMillis() - startTime) + "  k=" + k + "  vertexCount*3=" + vertexCount * 3);
     }
 
     public void drawSelf(int textureId) {
         GLES20.glUseProgram(mProgram);
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
+        GLES20.glUniform1f(uControlHandle, uControlLength);
 
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);
@@ -178,5 +220,9 @@ public class TwistCircle {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+    }
+
+    public void onDestroy() {
+        isRun = false;
     }
 }
