@@ -21,12 +21,22 @@ public class TwistCircle {
             "attribute vec3 aVertex;\n" +           // 'attribute' :  supported in vertex shaders only
             "attribute vec2 aTexture;\n" +
             "varying vec2 vTexture;\n" +
-            "uniform float uControl;" +
+            "uniform float uControl;" +             // 从圆到三角形的控制因子
             "void main() {\n" +
             "   float pi = 3.141592653;\n" +
             "   vec3 tempVertex = aVertex;\n" +
-            //"   float radians = 0.0;\n" +
-            //"   radians = atan(tempVertex.x, tempVertex.y);\n" +
+            "   float radians = 0.0;\n" +           // 以ｙ轴正半轴为起始边，顺时针角度为正
+            "   if(tempVertex.y == 0.0) {\n" +
+            "       if(tempVertex.x > 0.0)\n" +
+            "           radians = pi / 2.0;\n" +
+            "       else radians = pi * 1.5;\n" +
+            "   } else radians = atan(tempVertex.x, tempVertex.y);\n" +// 计算其他坐标点的旋转角度
+            "   float lRadians;" +
+            "   if(radians >=0.0 && radians < pi * 2.0 / 3.0) {\n" +
+            "       lRadians = radians - pi / 3.0;\n" +
+            "       if(lRadians < 0)\n" +
+            "           lRadians = -lRadians; " +
+            "   }\n" +
             "   gl_Position = uMVPMatrix * vec4(tempVertex, 1);\n" +
             "   vTexture = aTexture;\n" +
             "}";

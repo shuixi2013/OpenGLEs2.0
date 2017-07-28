@@ -8,8 +8,8 @@ package cn.dream.android.opengles20.test;
 public class TestClass {
 
     public static void main(String[] args) {
-        float y = 0;
-        float x = 0.01f;
-        System.out.println(Math.atan(y / x));
+        float y = 1f;
+        float x = -1f;
+        System.out.println(Math.atan(x / y));
     }
 }
