@@ -21,6 +21,7 @@ import cn.dream.android.opengles20.activity.StencilActivity_;
 import cn.dream.android.opengles20.activity.TextureActivity_;
 import cn.dream.android.opengles20.activity.TextureEarthActivity_;
 import cn.dream.android.opengles20.activity.TriangleActivity_;
+import cn.dream.android.opengles20.activity.TwistCircleActivity_;
 import cn.dream.android.opengles20.activity.WavingFlagActivity_;
 import cn.dream.android.opengles20.islandscenery.IsLandSceneryActivity_;
 
@@ -94,5 +95,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onScreenSizeViewPort(View view) {
         startActivity(new Intent(this, SSViewPortActivity_.class));
+    }
+
+    public void onTwistCircle(View view) {
+        startActivity(new Intent(this, TwistCircleActivity_.class));
     }
 }

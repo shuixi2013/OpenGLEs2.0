@@ -51,6 +51,8 @@
 
         <activity android:name=".activity.SSViewPortActivity_" />
 
+        <activity android:name=".activity.TwistCircleActivity_" />
+
     </application>
 
 </manifest>

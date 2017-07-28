@@ -180,13 +180,24 @@
         android:id="@+id/button16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/button7"
         android:layout_marginLeft="14dp"
         android:layout_marginStart="14dp"
+        android:layout_toEndOf="@+id/button6"
+        android:layout_toRightOf="@+id/button6"
         android:onClick="onScreenSizeViewPort"
         android:text="ScreenSizeViewPort"
-        android:textAllCaps="false"
-        android:layout_below="@+id/button7"
-        android:layout_toRightOf="@+id/button6"
-        android:layout_toEndOf="@+id/button6" />
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button16"
+        android:layout_alignStart="@+id/button16"
+        android:layout_alignTop="@+id/button10"
+        android:onClick="onTwistCircle"
+        android:text="TwistCircle"
+        android:textAllCaps="false" />
 
 </RelativeLayout>
