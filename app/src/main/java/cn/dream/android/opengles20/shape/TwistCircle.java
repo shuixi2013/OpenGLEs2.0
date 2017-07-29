@@ -22,12 +22,13 @@ public class TwistCircle {
             "attribute vec2 aTexture;\n" +
             "varying vec2 vTexture;\n" +
             "uniform float uControl;" +             // 从圆到三角形的控制因子
+            "uniform float uControlRadians;\n" +      // 三角形扭曲的控制角度
             "void main() {\n" +
             "   float pi = 3.141592653;\n" +
             "   vec3 tempVertex = aVertex;\n" +
             "   float radians = 0.0;\n" +           // 以ｙ轴正半轴为起始边，顺时针角度为正
             "   if(tempVertex.x == 0.0 && tempVertex.y == 0.0) {\n" +
-            "   } else  radians = atan(tempVertex.x, tempVertex.y);\n" +    // 计算其他坐标点的旋转角度
+            "   } else  radians = atan(tempVertex.x, tempVertex.y);\n" +    // 计算其他坐标点的旋转角度，返回值[-π，π]，而atan(x/y)则返回[-π/2，π/2]
             "   if(radians < 0.0)\n" +
             "       radians = 2.0 * pi + radians;\n" +
             "   float lRadians;\n" +
@@ -43,7 +44,10 @@ public class TwistCircle {
             "   float curRadius = sqrt(tempVertex.x * tempVertex.x + tempVertex.y * tempVertex.y);\n" +
             "   float length = curRadius / cos(lRadians) - curRadius;\n" +
             "   tempVertex.x = tempVertex.x + length * sin(radians) * uControl;\n" +
-            "   tempVertex.y = tempVertex.y + length * cos(radians) * uControl;\n" +
+            "   tempVertex.y = tempVertex.y + length * cos(radians) * uControl;" +
+            "   float secondLength = sqrt(tempVertex.x * tempVertex.x + tempVertex.y * tempVertex.y);\n" +
+            "   tempVertex.x = secondLength * sin(radians + secondLength * uControlRadians);\n" +
+            "   tempVertex.y = secondLength * cos(radians + secondLength * uControlRadians);\n" +
             "   gl_Position = uMVPMatrix * vec4(tempVertex, 1);\n" +
             "   vTexture = aTexture;\n" +
             "}";
@@ -52,7 +56,7 @@ public class TwistCircle {
             "varying vec2 vTexture;\n" +
             "uniform sampler2D uTexture;\n" +
             "void main() {" +
-            "   gl_FragColor = texture2D(uTexture, vTexture);\n" + //vec4(0.1, 0.8, 0.2, 1);
+            "   gl_FragColor = vec4(0.1, 0.1, 0.1, 1);\n" + //texture2D(uTexture, vTexture);
             "}";
 
     private float[] vertex;
@@ -64,6 +68,8 @@ public class TwistCircle {
     private boolean isRun;
     private boolean uControlFlag;
 
+    private float uControlRadians;  // 控住扭曲的角度
+
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
 
@@ -71,6 +77,7 @@ public class TwistCircle {
     private int vertexHandle;
     private int textureHandle;
     private int uControlHandle;
+    private int uControlRadiansHandle;
     private int uMVPMatrixHandle;
 
     public TwistCircle(int mProgram) {
@@ -83,31 +90,41 @@ public class TwistCircle {
         vertexHandle = GLES20.glGetAttribLocation(this.mProgram, "aVertex");
         textureHandle = GLES20.glGetAttribLocation(this.mProgram, "aTexture");
         uControlHandle = GLES20.glGetUniformLocation(this.mProgram, "uControl");
+        uControlRadiansHandle = GLES20.glGetUniformLocation(this.mProgram, "uControlRadians");
         uMVPMatrixHandle = GLES20.glGetUniformLocation(this.mProgram, "uMVPMatrix");
 
         startTwistThread();
     }
 
-    private void startTwistThread() {
+    public void startTwistThread() {
         isRun = false;
+        uControlLength = 0;
+        uControlRadians = 0;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 isRun = true;
                 uControlFlag = false;
                 while (isRun) {
-                    if (uControlFlag)
+                    if (uControlFlag) {
                         uControlLength -= 0.05f;
-                    else uControlLength += 0.05f;
+                        uControlRadians -= Math.PI / 36;
+                    } else {
+                        uControlLength += 0.05f;
+                        uControlRadians += Math.PI / 36;
+                    }
 
-                    if (uControlLength > 1)
+                    if (uControlLength > 1) {
                         uControlFlag = true;
-                    if (uControlLength <= 0)
+                        isRun = false;
+                    }
+                    if (uControlLength <= 0) {
                         uControlFlag = false;
+                    }
 
                     //Log.d(TAG, "startTwistThread() uControlLength=" + uControlLength);
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(70);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -226,6 +243,7 @@ public class TwistCircle {
 
         GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MatrixState.getFinalMatrix(), 0);
         GLES20.glUniform1f(uControlHandle, uControlLength);
+        GLES20.glUniform1f(uControlRadiansHandle, uControlRadians);
 
         GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
         GLES20.glVertexAttribPointer(textureHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, textureBuffer);

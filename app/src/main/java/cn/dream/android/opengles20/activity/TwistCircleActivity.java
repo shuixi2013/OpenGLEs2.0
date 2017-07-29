@@ -112,6 +112,7 @@ public class TwistCircleActivity extends Activity {
                 radians -= Math.PI / 50;
                 tx = (float) (cx + ctLength * Math.sin(radians));
                 tz = (float) (cz - ctLength * Math.cos(radians));
+                twistCircle.startTwistThread();
                 break;
             case 3:     // 右旋
                 radians += Math.PI / 50;
@@ -131,7 +132,7 @@ public class TwistCircleActivity extends Activity {
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            GLES20.glClearColor(0, 0, 0, 1);
+            GLES20.glClearColor(1, 1, 1, 1);
 
             mPrograms = new int[1];
             mPrograms[0] = ShaderUtil.createProgram(TwistCircle.VERTEX_CODE, TwistCircle.FRAGMENT_CODE);
